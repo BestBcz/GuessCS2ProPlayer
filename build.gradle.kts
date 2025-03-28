@@ -21,6 +21,7 @@ dependencies {
     implementation(kotlin("stdlib"))
     compileOnly("net.mamoe:mirai-core:2.16.0")
     compileOnly("net.mamoe:mirai-console:2.16.0")
+    implementation("xyz.cssxsh.mirai:mirai-skia-plugin:1.3.2")
 }
 
 tasks.withType<Jar> {

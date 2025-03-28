@@ -8,36 +8,20 @@ import net.mamoe.mirai.console.plugin.jvm.KotlinPlugin
 import net.mamoe.mirai.contact.Group
 import net.mamoe.mirai.event.events.GroupMessageEvent
 import net.mamoe.mirai.event.globalEventChannel
-import net.mamoe.mirai.message.data.Image as MiraiImage
 import net.mamoe.mirai.message.data.PlainText
 import net.mamoe.mirai.message.data.buildMessageChain
 import net.mamoe.mirai.utils.ExternalResource.Companion.toExternalResource
-import java.awt.Color
-import java.awt.Font
-import java.awt.GradientPaint
-import java.awt.Graphics2D
-import java.awt.image.BufferedImage
+import org.jetbrains.skia.Data
+import org.jetbrains.skia.Image
+import org.jetbrains.skia.Surface
+import org.jetbrains.skia.svg.SVGDOM
 import java.io.BufferedReader
 import java.io.File
 import java.io.FileReader
-import javax.imageio.ImageIO
 import kotlin.random.Random
 
-data class Player(
-    val name: String,
-    val team: String,
-    val nationality: String,
-    val age: Int,
-    val position: String,
-    val majorAppearances: Int // 新增 Major 出场次数
-)
 
-data class GameState(
-    val groupId: Long,
-    val targetPlayer: Player,
-    var guessesLeft: Int = 10,
-    val guesses: MutableList<Pair<String, Player>> = mutableListOf()
-)
+
 
 object GuessCS2ProPlayer : KotlinPlugin(
     JvmPluginDescription(
@@ -46,6 +30,7 @@ object GuessCS2ProPlayer : KotlinPlugin(
         version = "0.0.1"
     ) {
         author("Bcz")
+        dependsOn("xyz.cssxsh.mirai.plugin.mirai-skia-plugin", ">= 1.1.0", false)
     }
 ) {
     // 玩家数据
@@ -83,17 +68,16 @@ object GuessCS2ProPlayer : KotlinPlugin(
     }
 
     override fun onEnable() {
-        logger.info("Guess CS2 Pro Player Plugin Enabled - Step 1: Starting onEnable")
 
         // 加载 CSV 文件
-        logger.info("Step 2: Checking for players.csv in ${dataFolder.path}")
+        logger.info("Checking for players.csv in ${dataFolder.path}")
         val csvFile = File(dataFolder, "players.csv")
         if (!csvFile.exists()) {
-            logger.error("Step 3: players.csv not found in ${dataFolder.path}")
+            logger.error("players.csv not found in ${dataFolder.path}")
             return
         }
 
-        logger.info("Step 4: Loading players from CSV")
+        logger.info("Loading players from CSV")
         try {
             players = loadPlayersFromCsv(csvFile)
             logger.info("Step 5: Loaded ${players.size} players from CSV")
@@ -103,13 +87,10 @@ object GuessCS2ProPlayer : KotlinPlugin(
         }
 
         // 注册命令
-        logger.info("Step 7: Registering commands")
         CommandManager.INSTANCE.registerCommand(StartGameCommand, true)
         CommandManager.INSTANCE.registerCommand(StopGameCommand, true)
-        logger.info("Step 8: Commands registered successfully")
 
         // 监听群消息
-        logger.info("Step 9: Setting up group message listener")
         globalEventChannel().subscribeAlways<GroupMessageEvent> { event ->
             logger.info("Step 10: Received group message: ${event.message.contentToString()}")
             val groupId = group.id
@@ -117,12 +98,12 @@ object GuessCS2ProPlayer : KotlinPlugin(
             val senderName = sender.nick
 
             if (hasGameState(groupId)) {
-                logger.info("Step 11: Game in progress for group $groupId, processing guess: $message")
+
                 val gameState = getGameState(groupId)!!
                 val guessedPlayer = findPlayer(message)
 
                 if (guessedPlayer == null) {
-                    logger.info("Step 12: Player not found for guess: $message")
+                    logger.info("Player not found: $message")
                     return@subscribeAlways
                 }
 
@@ -134,7 +115,7 @@ object GuessCS2ProPlayer : KotlinPlugin(
                     logger.info("Step 14: Drawing guess table")
                     drawGuessTable(gameState)
                 } catch (e: Exception) {
-                    logger.error("Step 15: Failed to draw table: ${e.message}", e)
+                    logger.error("Failed to draw table: ${e.message}", e)
                     group.sendMessage("生成表格失败，请稍后重试。")
                     return@subscribeAlways
                 }
@@ -143,14 +124,13 @@ object GuessCS2ProPlayer : KotlinPlugin(
                     if (!tempFile.exists() || tempFile.length() == 0L) {
                         throw IllegalStateException("Temporary file is empty or does not exist: ${tempFile.absolutePath}")
                     }
-                    logger.info("Step 16: Temporary image saved to ${tempFile.absolutePath}, size: ${tempFile.length()} bytes")
+                    logger.info("Temporary image saved to ${tempFile.absolutePath}, size: ${tempFile.length()} bytes")
 
                     val uploadedImage = tempFile.toExternalResource().use { resource ->
                         group.uploadImage(resource)
                     }
 
                     tempFile.delete()
-                    logger.info("Step 17: Image uploaded successfully")
                     uploadedImage
                 } catch (e: Exception) {
                     logger.error("Step 18: Failed to upload image: ${e.message}", e)
@@ -164,19 +144,15 @@ object GuessCS2ProPlayer : KotlinPlugin(
                     if (guessedPlayer.name == gameState.targetPlayer.name) {
                         +PlainText("恭喜！${senderName} 猜对了选手：${gameState.targetPlayer.name}")
                         removeGameState(groupId)
-                        logger.info("Step 19: Game ended - Correct guess")
                     } else if (gameState.guessesLeft == 0) {
                         +PlainText("游戏结束！正确选手为 ${gameState.targetPlayer.name}")
                         removeGameState(groupId)
-                        logger.info("Step 20: Game ended - No guesses left")
                     } else {
                         +PlainText("${senderName} 猜测了 ${guessedPlayer.name}，剩余 ${gameState.guessesLeft} 次猜测机会。")
-                        logger.info("Step 21: Guess processed, ${gameState.guessesLeft} guesses left")
                     }
                 })
             }
         }
-        logger.info("Step 22: Group message listener setup complete")
     }
 
     // 从 CSV 文件加载玩家数据
@@ -208,165 +184,167 @@ object GuessCS2ProPlayer : KotlinPlugin(
         }
         return players
     }
-    // 绘制表格并保存为文件（使用 BufferedImage）
-    fun drawGuessTable(gameState: GameState): File {
-        val width = 700
-        val height = 60 + gameState.guesses.size * 40 // 动态高度
+    // 队伍的地区映射
+    val teamRegions = mapOf(
+        "Team Falcons" to "Middle East",
+        "Eternal Fire" to "Middle East",
+        "Vitality" to "Europe",
+        "Free Agent" to "N/A",
+        "Spirit" to "Europe",
+        "Natus Vincere" to "Europe",
+        "Astralis" to "Europe",
+        "FaZe Clan" to "Europe"
+    )
 
-        // 创建 BufferedImage
-        val image = BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB)
-        val g2d = image.createGraphics()
+    // 国家的洲际映射
+    val countryContinents = mapOf(
+        "ba" to "Europe", // Bosnia (for NiKo)
+        "tr" to "Asia",   // Turkey (for XANTARES)
+        "il" to "Asia",   // Israel (for flameZ)
+        "ru" to "Europe", // Russia (for flamie, chopper)
+        "ua" to "Europe", // Ukraine (for s1mple)
+        "dk" to "Europe", // Denmark (for device)
+        "sk" to "Europe", // Slovakia (for GuardiaN)
+        "pl" to "Europe", // Poland (for pasha)
+        "be" to "Europe", // Belgium (for Ex6TenZ)
+        "nl" to "Europe", // Netherlands (for chrisJ)
+        "br" to "South America", // Brazil (for fnx, bit)
+        "de" to "Europe"  // Denmark/Germany (for karrigan)
+    )
 
-        // 背景（深紫色渐变）
-        val gradient = GradientPaint(
-            0f, 0f, Color(30, 20, 40),
-            0f, height.toFloat(), Color(50, 40, 60)
-        )
-        g2d.paint = gradient
-        g2d.fillRect(0, 0, width, height)
+    // 国家名称到缩写的映射
+    val countryToCode = mapOf(
+        "Bosnia and Herzegovina" to "ba",
+        "Turkey" to "tr",
+        "Israel" to "il",
+        "Russia" to "ru",
+        "Ukraine" to "ua",
+        "Denmark" to "dk",
+        "Slovakia" to "sk",
+        "Poland" to "pl",
+        "Belgium" to "be",
+        "Netherlands" to "nl",
+        "Brazil" to "br",
+        "Germany" to "de",
+        // 根据你的 CSV 文件添加更多映射
+        "United States" to "us",
+        "France" to "fr",
+        "Sweden" to "se",
+        "Norway" to "no",
+        "Finland" to "fi",
+        "Australia" to "au",
+        "Canada" to "ca",
+        "China" to "cn",
+        "Japan" to "jp",
+        "South Korea" to "kr"
+    )
 
-        // 字体
-        val font = Font("Default", Font.PLAIN, 14)
-        val boldFont = Font("Default", Font.BOLD, 14)
-        g2d.font = font
+    // 角色的类别映射
+    val roleCategories = mapOf(
+        "Rifler" to "Rifler",
+        "AWPer" to "AWPer",
+        "Coach" to "Support",
+        "IGL" to "Support"
+    )
 
-        // 绘制表头
-        val headers = listOf("NAME", "TEAM", "NAT", "AGE", "ROLE", "MAJ APP")
-        val columnWidths = listOf(100, 120, 100, 60, 100, 80)
-        var x = 10f
-        g2d.font = boldFont
-        headers.forEachIndexed { index, header ->
-            g2d.paint = GradientPaint(
-                x, 0f, Color.WHITE,
-                x, 30f, Color(200, 200, 200)
-            )
-            g2d.drawString(header, x + 5, 30f)
-            x += columnWidths[index]
+
+    // 从插件的 data/flags 目录加载国旗 SVG 文件
+    fun loadSVGFromFile(nationality: String): SVGDOM {
+        val flagsDir = File(dataFolder, "flags")
+        logger.info("Attempting to load flag for nationality: $nationality")
+        logger.info("Flags directory: ${flagsDir.absolutePath}")
+
+        // 将完整国家名称转换为缩写
+        val countryCode = countryToCode[nationality] ?: run {
+            logger.warning("No country code mapping found for nationality: $nationality, using lowercase as fallback")
+            nationality.lowercase().replace(" ", "_")
+        }
+        logger.info("Mapped country code: $countryCode")
+
+        if (!flagsDir.exists()) {
+            logger.warning("Flags directory does not exist, creating: ${flagsDir.absolutePath}")
+            flagsDir.mkdirs() // 如果目录不存在，创建目录
         }
 
-        // 绘制表格内容
-        g2d.font = font
-        gameState.guesses.forEachIndexed { index, (guesser, player) ->
-            val y = 50f + index * 40f
-            x = 10f
+        val svgFile = File(flagsDir, "$countryCode.svg")
+        logger.info("Looking for SVG file: ${svgFile.absolutePath}")
 
-            // 行背景
-            val rowColor = if (player.name == gameState.targetPlayer.name) {
-                GradientPaint(
-                    0f, y - 15, Color(0, 150, 0),
-                    0f, y + 15, Color(0, 100, 0)
-                )
-            } else {
-                GradientPaint(
-                    0f, y - 15, Color(40, 30, 50),
-                    0f, y + 15, Color(60, 50, 70)
-                )
-            }
-            g2d.paint = rowColor
-            g2d.fillRect(10, (y - 15).toInt(), width - 20, 30)
-
-            // NAME
-            g2d.color = Color.WHITE
-            g2d.drawString(player.name, x + 5, y)
-            x += columnWidths[0]
-
-            // TEAM
-            val teamColor = if (player.team == gameState.targetPlayer.team) Color.GREEN else Color.WHITE
-            g2d.color = teamColor
-            g2d.drawString(player.team, x + 5, y)
-            x += columnWidths[1]
-
-            // NAT
-            val natColor = if (player.nationality == gameState.targetPlayer.nationality) Color.GREEN else Color.WHITE
-            g2d.color = natColor
-            g2d.drawString(player.nationality, x + 5, y)
-            x += columnWidths[2]
-
-            // AGE
-            val ageColor = if (player.age == gameState.targetPlayer.age) Color.GREEN else Color.WHITE
-            val ageText = when {
-                player.age == gameState.targetPlayer.age -> player.age.toString()
-                player.age < gameState.targetPlayer.age -> "${player.age} ↑"
-                else -> "${player.age} ↓"
-            }
-            g2d.color = ageColor
-            g2d.drawString(ageText, x + 5, y)
-            x += columnWidths[3]
-
-            // ROLE
-            val roleColor = if (player.position == gameState.targetPlayer.position) Color.GREEN else Color.WHITE
-            g2d.color = roleColor
-            g2d.drawString(player.position, x + 5, y)
-            x += columnWidths[4]
-
-            // MAJ APP
-            val majColor = if (player.majorAppearances == gameState.targetPlayer.majorAppearances) Color.GREEN else Color.WHITE
-            val majText = when {
-                player.majorAppearances == gameState.targetPlayer.majorAppearances -> player.majorAppearances.toString()
-                player.majorAppearances < gameState.targetPlayer.majorAppearances -> "${player.majorAppearances} ↑"
-                else -> "${player.majorAppearances} ↓"
-            }
-            g2d.color = majColor
-            g2d.drawString(majText, x + 5, y)
+        if (!svgFile.exists()) {
+            logger.error("SVG file not found: ${svgFile.absolutePath}")
+            throw IllegalStateException("SVG file not found: ${svgFile.absolutePath}")
         }
 
-        // 释放 Graphics2D 资源
-        g2d.dispose()
+        if (!svgFile.canRead()) {
+            logger.error("Cannot read SVG file: ${svgFile.absolutePath}")
+            throw IllegalStateException("Cannot read SVG file: ${svgFile.absolutePath}")
+        }
 
-        // 保存 BufferedImage 到临时文件
-        val tempFile = File.createTempFile("guesscs2player", ".png")
-        ImageIO.write(image, "png", tempFile)
+        try {
+            val bytes = svgFile.readBytes()
+            logger.info("Successfully read SVG file: ${svgFile.absolutePath}, size: ${bytes.size} bytes")
+            return SVGDOM(Data.makeFromBytes(bytes))
+        } catch (e: Exception) {
+            logger.error("Failed to parse SVG file: ${svgFile.absolutePath}, error: ${e.message}", e)
+            throw e
+        }
+    }
 
-        return tempFile
+    fun SVGDOM.makeImage(width: Float, height: Float): Image {
+        setContainerSize(width, height)
+        return Surface.makeRasterN32Premul(width.toInt(), height.toInt()).apply { render(canvas) }.makeImageSnapshot()
+    }
+
+
+    // 命令：开始猜选手
+    object StartGameCommand : SimpleCommand(
+        GuessCS2ProPlayer,
+        primaryName = "开始猜选手",
+        description = "开始 CS2 猜职业哥游戏"
+    ) {
+        @Handler
+        suspend fun CommandSender.handle() {
+            val group = this.subject as? Group ?: run {
+                sendMessage("此命令只能在群聊中使用")
+                return
+            }
+            val groupId = group.id
+
+            if (GuessCS2ProPlayer.hasGameState(groupId)) {
+                sendMessage("群内已有进行中的游戏，请先完成。")
+                return
+            }
+
+            val targetPlayer = GuessCS2ProPlayer.getRandomPlayer()
+            GuessCS2ProPlayer.startGame(groupId, GameState(groupId, targetPlayer))
+            sendMessage("游戏开始！群内成员可以直接发送选手名字进行猜测（例如：s1mple），共有 10 次机会。")
+        }
+    }
+
+    // 命令：结束猜选手
+    object StopGameCommand : SimpleCommand(
+        GuessCS2ProPlayer,
+        primaryName = "结束猜选手",
+        description = "结束 CS2 猜职业哥游戏"
+    ) {
+        @Handler
+        suspend fun CommandSender.handle() {
+            val group = this.subject as? Group ?: run {
+                sendMessage("此命令只能在群聊中使用")
+                return
+            }
+            val groupId = group.id
+
+            if (!GuessCS2ProPlayer.hasGameState(groupId)) {
+                sendMessage("当前没有进行中的游戏。")
+                return
+            }
+
+            val gameState = GuessCS2ProPlayer.getGameState(groupId)!!
+            sendMessage("游戏已结束！正确选手为 ${gameState.targetPlayer.name}")
+            GuessCS2ProPlayer.removeGameState(groupId)
+        }
     }
 }
 
-// 命令：开始猜选手
-object StartGameCommand : SimpleCommand(
-    GuessCS2ProPlayer,
-    primaryName = "开始猜选手",
-    description = "开始 CS2 猜职业哥游戏"
-) {
-    @Handler
-    suspend fun CommandSender.handle() {
-        val group = this.subject as? Group ?: run {
-            sendMessage("此命令只能在群聊中使用")
-            return
-        }
-        val groupId = group.id
 
-        if (GuessCS2ProPlayer.hasGameState(groupId)) {
-            sendMessage("群内已有进行中的游戏，请先完成。")
-            return
-        }
 
-        val targetPlayer = GuessCS2ProPlayer.getRandomPlayer()
-        GuessCS2ProPlayer.startGame(groupId, GameState(groupId, targetPlayer))
-        sendMessage("游戏开始！群内成员可以直接发送选手名字进行猜测（例如：s1mple），共有 10 次机会。")
-    }
-}
-
-// 命令：结束猜选手
-object StopGameCommand : SimpleCommand(
-    GuessCS2ProPlayer,
-    primaryName = "结束猜选手",
-    description = "结束 CS2 猜职业哥游戏"
-) {
-    @Handler
-    suspend fun CommandSender.handle() {
-        val group = this.subject as? Group ?: run {
-            sendMessage("此命令只能在群聊中使用")
-            return
-        }
-        val groupId = group.id
-
-        if (!GuessCS2ProPlayer.hasGameState(groupId)) {
-            sendMessage("当前没有进行中的游戏。")
-            return
-        }
-
-        val gameState = GuessCS2ProPlayer.getGameState(groupId)!!
-        sendMessage("游戏已结束！正确选手为 ${gameState.targetPlayer.name}")
-        GuessCS2ProPlayer.removeGameState(groupId)
-    }
-}
