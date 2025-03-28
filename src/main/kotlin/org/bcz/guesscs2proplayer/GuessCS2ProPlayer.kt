@@ -209,7 +209,10 @@ object GuessCS2ProPlayer : KotlinPlugin(
         "be" to "Europe", // Belgium (for Ex6TenZ)
         "nl" to "Europe", // Netherlands (for chrisJ)
         "br" to "South America", // Brazil (for fnx, bit)
-        "de" to "Europe"  // Denmark/Germany (for karrigan)
+        "de" to "Europe", // Denmark/Germany (for karrigan)
+        "fr" to "Europe",  //
+        "se" to "Europe",
+        "no" to "Europe"// no
     )
 
     // 国家名称到缩写的映射
