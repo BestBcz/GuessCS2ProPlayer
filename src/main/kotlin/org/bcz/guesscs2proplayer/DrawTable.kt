@@ -10,7 +10,7 @@ import java.io.File
 fun drawGuessTable(gameState: GameState): File {
     val width = 700
     val maxRows = 11 // 固定 11 行表格（1 行表头 + 10 行猜测）
-    val rowHeight = 30f
+    val rowHeight = 40f // 格子高度
     val rowSpacing = 10f
     val tableHeight = rowHeight + rowSpacing + (maxRows - 1) * (rowHeight + rowSpacing) // 表头 + 10 行内容
     val height = (tableHeight + 40f).toInt() // 画布高度，留一些边距
@@ -69,10 +69,11 @@ fun drawGuessTable(gameState: GameState): File {
     }
     canvas.drawRRect(headerRRect, headerPaint)
 
-    // 绘制表头文字
+    // 绘制表头文字（垂直居中）
     var x = tableX
     headers.forEachIndexed { index, header ->
-        canvas.drawString(header, x + 5f, tableY + 20f, font, Paint().apply { color = Color.WHITE })
+        val textY = tableY + (rowHeight / 2) + (font.metrics.ascent + font.metrics.descent) / 2 // 垂直居中
+        canvas.drawString(header, x + 5f, textY, font, Paint().apply { color = Color.WHITE })
         x += columnWidths[index]
     }
 
@@ -92,7 +93,7 @@ fun drawGuessTable(gameState: GameState): File {
         )
 
         fields.forEachIndexed { fieldIndex, field ->
-            val cellRect = Rect.makeXYWH(x, y - 15f, columnWidths[fieldIndex] - 5f, rowHeight)
+            val cellRect = Rect.makeXYWH(x, y - rowHeight / 2, columnWidths[fieldIndex] - 5f, rowHeight)
             val cellRRect = cellRect.toRRect(cornerRadius)
             canvas.drawRectShadowAntiAlias(cellRRect, 2f, 2f, 4f, 2f, Color.makeRGB(0, 0, 0))
 
@@ -102,38 +103,31 @@ fun drawGuessTable(gameState: GameState): File {
                     0 -> { // NAME
                         if (player.name == gameState.targetPlayer.name) {
                             Shader.makeLinearGradient(
-                                x, y - 15f, x, y + 15f,
-                                intArrayOf(Color.makeARGB(100, 0, 120, 0), Color.makeARGB(100, 0, 80, 0)),
+                                x, y - rowHeight / 2, x, y + rowHeight / 2,
+                                intArrayOf(Color.makeARGB(100, 0, 180, 0), Color.makeARGB(100, 0, 140, 0)), // 更亮的绿色
                                 null,
                                 GradientStyle(tileMode = FilterTileMode.CLAMP, isPremul = true, localMatrix = null)
                             )
                         } else {
                             Shader.makeLinearGradient(
-                                x, y - 15f, x, y + 15f,
-                                intArrayOf(Color.makeARGB(100, 60, 60, 60), Color.makeARGB(100, 40, 40, 40)), // 透明度 100
+                                x, y - rowHeight / 2, x, y + rowHeight / 2,
+                                intArrayOf(Color.makeARGB(100, 60, 60, 60), Color.makeARGB(100, 40, 40, 40)),
                                 null,
                                 GradientStyle(tileMode = FilterTileMode.CLAMP, isPremul = true, localMatrix = null)
                             )
                         }
                     }
                     1 -> { // TEAM
-                        val guessedRegion = GuessCS2ProPlayer.teamRegions[player.team] ?: "N/A"
-                        val targetRegion = GuessCS2ProPlayer.teamRegions[gameState.targetPlayer.team] ?: "N/A"
-                        when {
-                            player.team == gameState.targetPlayer.team -> Shader.makeLinearGradient(
-                                x, y - 15f, x, y + 15f,
-                                intArrayOf(Color.makeARGB(100, 0, 120, 0), Color.makeARGB(100, 0, 80, 0)),
+                        if (player.team == gameState.targetPlayer.team) {
+                            Shader.makeLinearGradient(
+                                x, y - rowHeight / 2, x, y + rowHeight / 2,
+                                intArrayOf(Color.makeARGB(100, 0, 180, 0), Color.makeARGB(100, 0, 140, 0)), // 更亮的绿色
                                 null,
                                 GradientStyle(tileMode = FilterTileMode.CLAMP, isPremul = true, localMatrix = null)
                             )
-                            guessedRegion == targetRegion && guessedRegion != "N/A" -> Shader.makeLinearGradient(
-                                x, y - 15f, x, y + 15f,
-                                intArrayOf(Color.makeARGB(100, 200, 200, 0), Color.makeARGB(100, 150, 150, 0)),
-                                null,
-                                GradientStyle(tileMode = FilterTileMode.CLAMP, isPremul = true, localMatrix = null)
-                            )
-                            else -> Shader.makeLinearGradient(
-                                x, y - 15f, x, y + 15f,
+                        } else {
+                            Shader.makeLinearGradient(
+                                x, y - rowHeight / 2, x, y + rowHeight / 2,
                                 intArrayOf(Color.makeARGB(100, 60, 60, 60), Color.makeARGB(100, 40, 40, 40)),
                                 null,
                                 GradientStyle(tileMode = FilterTileMode.CLAMP, isPremul = true, localMatrix = null)
@@ -145,19 +139,19 @@ fun drawGuessTable(gameState: GameState): File {
                         val targetContinent = GuessCS2ProPlayer.countryContinents[GuessCS2ProPlayer.countryToCode[gameState.targetPlayer.nationality]?.lowercase() ?: gameState.targetPlayer.nationality.lowercase()] ?: "Unknown"
                         when {
                             player.nationality == gameState.targetPlayer.nationality -> Shader.makeLinearGradient(
-                                x, y - 15f, x, y + 15f,
-                                intArrayOf(Color.makeARGB(100, 0, 120, 0), Color.makeARGB(100, 0, 80, 0)),
+                                x, y - rowHeight / 2, x, y + rowHeight / 2,
+                                intArrayOf(Color.makeARGB(100, 0, 180, 0), Color.makeARGB(100, 0, 140, 0)), // 更亮的绿色
                                 null,
                                 GradientStyle(tileMode = FilterTileMode.CLAMP, isPremul = true, localMatrix = null)
                             )
                             guessedContinent == targetContinent && guessedContinent != "Unknown" -> Shader.makeLinearGradient(
-                                x, y - 15f, x, y + 15f,
-                                intArrayOf(Color.makeARGB(100, 200, 200, 0), Color.makeARGB(100, 150, 150, 0)),
+                                x, y - rowHeight / 2, x, y + rowHeight / 2,
+                                intArrayOf(Color.makeARGB(100, 255, 255, 0), Color.makeARGB(100, 200, 200, 0)), // 更亮的黄色
                                 null,
                                 GradientStyle(tileMode = FilterTileMode.CLAMP, isPremul = true, localMatrix = null)
                             )
                             else -> Shader.makeLinearGradient(
-                                x, y - 15f, x, y + 15f,
+                                x, y - rowHeight / 2, x, y + rowHeight / 2,
                                 intArrayOf(Color.makeARGB(100, 60, 60, 60), Color.makeARGB(100, 40, 40, 40)),
                                 null,
                                 GradientStyle(tileMode = FilterTileMode.CLAMP, isPremul = true, localMatrix = null)
@@ -167,21 +161,16 @@ fun drawGuessTable(gameState: GameState): File {
                     3 -> { // AGE
                         val guessedAge = player.age
                         val targetAge = gameState.targetPlayer.age
-                        when {
-                            guessedAge == targetAge -> Shader.makeLinearGradient(
-                                x, y - 15f, x, y + 15f,
-                                intArrayOf(Color.makeARGB(100, 0, 120, 0), Color.makeARGB(100, 0, 80, 0)),
+                        if (guessedAge == targetAge) {
+                            Shader.makeLinearGradient(
+                                x, y - rowHeight / 2, x, y + rowHeight / 2,
+                                intArrayOf(Color.makeARGB(100, 0, 180, 0), Color.makeARGB(100, 0, 140, 0)), // 更亮的绿色
                                 null,
                                 GradientStyle(tileMode = FilterTileMode.CLAMP, isPremul = true, localMatrix = null)
                             )
-                            Math.abs(guessedAge - targetAge) <= 2 -> Shader.makeLinearGradient(
-                                x, y - 15f, x, y + 15f,
-                                intArrayOf(Color.makeARGB(100, 200, 200, 0), Color.makeARGB(100, 150, 150, 0)),
-                                null,
-                                GradientStyle(tileMode = FilterTileMode.CLAMP, isPremul = true, localMatrix = null)
-                            )
-                            else -> Shader.makeLinearGradient(
-                                x, y - 15f, x, y + 15f,
+                        } else {
+                            Shader.makeLinearGradient(
+                                x, y - rowHeight / 2, x, y + rowHeight / 2,
                                 intArrayOf(Color.makeARGB(100, 60, 60, 60), Color.makeARGB(100, 40, 40, 40)),
                                 null,
                                 GradientStyle(tileMode = FilterTileMode.CLAMP, isPremul = true, localMatrix = null)
@@ -189,23 +178,16 @@ fun drawGuessTable(gameState: GameState): File {
                         }
                     }
                     4 -> { // ROLE
-                        val guessedCategory = GuessCS2ProPlayer.roleCategories[player.position] ?: "Unknown"
-                        val targetCategory = GuessCS2ProPlayer.roleCategories[gameState.targetPlayer.position] ?: "Unknown"
-                        when {
-                            player.position == gameState.targetPlayer.position -> Shader.makeLinearGradient(
-                                x, y - 15f, x, y + 15f,
-                                intArrayOf(Color.makeARGB(100, 0, 120, 0), Color.makeARGB(100, 0, 80, 0)),
+                        if (player.position == gameState.targetPlayer.position) {
+                            Shader.makeLinearGradient(
+                                x, y - rowHeight / 2, x, y + rowHeight / 2,
+                                intArrayOf(Color.makeARGB(100, 0, 180, 0), Color.makeARGB(100, 0, 140, 0)), // 更亮的绿色
                                 null,
                                 GradientStyle(tileMode = FilterTileMode.CLAMP, isPremul = true, localMatrix = null)
                             )
-                            guessedCategory == targetCategory && guessedCategory != "Unknown" -> Shader.makeLinearGradient(
-                                x, y - 15f, x, y + 15f,
-                                intArrayOf(Color.makeARGB(100, 200, 200, 0), Color.makeARGB(100, 150, 150, 0)),
-                                null,
-                                GradientStyle(tileMode = FilterTileMode.CLAMP, isPremul = true, localMatrix = null)
-                            )
-                            else -> Shader.makeLinearGradient(
-                                x, y - 15f, x, y + 15f,
+                        } else {
+                            Shader.makeLinearGradient(
+                                x, y - rowHeight / 2, x, y + rowHeight / 2,
                                 intArrayOf(Color.makeARGB(100, 60, 60, 60), Color.makeARGB(100, 40, 40, 40)),
                                 null,
                                 GradientStyle(tileMode = FilterTileMode.CLAMP, isPremul = true, localMatrix = null)
@@ -214,14 +196,14 @@ fun drawGuessTable(gameState: GameState): File {
                     }
                     5 -> { // MAJ APP
                         Shader.makeLinearGradient(
-                            x, y - 15f, x, y + 15f,
+                            x, y - rowHeight / 2, x, y + rowHeight / 2,
                             intArrayOf(Color.makeARGB(100, 60, 60, 60), Color.makeARGB(100, 40, 40, 40)),
                             null,
                             GradientStyle(tileMode = FilterTileMode.CLAMP, isPremul = true, localMatrix = null)
                         )
                     }
                     else -> Shader.makeLinearGradient(
-                        x, y - 15f, x, y + 15f,
+                        x, y - rowHeight / 2, x, y + rowHeight / 2,
                         intArrayOf(Color.makeARGB(100, 60, 60, 60), Color.makeARGB(100, 40, 40, 40)),
                         null,
                         GradientStyle(tileMode = FilterTileMode.CLAMP, isPremul = true, localMatrix = null)
@@ -242,7 +224,8 @@ fun drawGuessTable(gameState: GameState): File {
                     GuessCS2ProPlayer.logger.error("Failed to render flag for nationality: ${player.nationality}, error: ${e.message}", e)
                     // 显示国家缩写（如果有映射）或原始国家名称
                     val displayText = GuessCS2ProPlayer.countryToCode[player.nationality] ?: player.nationality
-                    canvas.drawString(displayText, x + 5f, y, font, Paint().apply { color = Color.WHITE })
+                    val textY = y + (font.metrics.ascent + font.metrics.descent) / 2 // 垂直居中
+                    canvas.drawString(displayText, x + 5f, textY, font, Paint().apply { color = Color.WHITE })
                 }
             } else if (fieldIndex == 3) { // AGE
                 val ageText = when {
@@ -250,9 +233,11 @@ fun drawGuessTable(gameState: GameState): File {
                     player.age < gameState.targetPlayer.age -> "${player.age} ↑"
                     else -> "${player.age} ↓"
                 }
-                canvas.drawString(ageText, x + 5f, y, font, Paint().apply { color = Color.WHITE })
+                val textY = y + (font.metrics.ascent + font.metrics.descent) / 2 // 垂直居中
+                canvas.drawString(ageText, x + 5f, textY, font, Paint().apply { color = Color.WHITE })
             } else {
-                canvas.drawString(field, x + 5f, y, font, Paint().apply { color = Color.WHITE })
+                val textY = y + (font.metrics.ascent + font.metrics.descent) / 2 // 垂直居中
+                canvas.drawString(field, x + 5f, textY, font, Paint().apply { color = Color.WHITE })
             }
 
             x += columnWidths[fieldIndex]

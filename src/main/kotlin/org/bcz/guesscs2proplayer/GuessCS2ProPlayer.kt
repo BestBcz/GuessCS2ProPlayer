@@ -27,7 +27,7 @@ object GuessCS2ProPlayer : KotlinPlugin(
     JvmPluginDescription(
         id = "org.bcz.guesscs2proplayer",
         name = "CS2猜职业哥小游戏",
-        version = "0.0.1"
+        version = "0.0.2"
     ) {
         author("Bcz")
         dependsOn("xyz.cssxsh.mirai.plugin.mirai-skia-plugin", ">= 1.1.0", false)
@@ -184,70 +184,241 @@ object GuessCS2ProPlayer : KotlinPlugin(
         }
         return players
     }
-    // 队伍的地区映射
-    val teamRegions = mapOf(
-        "Team Falcons" to "Middle East",
-        "Eternal Fire" to "Middle East",
-        "Vitality" to "Europe",
-        "Free Agent" to "N/A",
-        "Spirit" to "Europe",
-        "Natus Vincere" to "Europe",
-        "Astralis" to "Europe",
-        "FaZe Clan" to "Europe"
-    )
-
     // 国家的洲际映射
     val countryContinents = mapOf(
-        "ba" to "Europe", // Bosnia (for NiKo)
-        "tr" to "Asia",   // Turkey (for XANTARES)
-        "il" to "Asia",   // Israel (for flameZ)
-        "ru" to "Europe", // Russia (for flamie, chopper)
-        "ua" to "Europe", // Ukraine (for s1mple)
-        "dk" to "Europe", // Denmark (for device)
-        "sk" to "Europe", // Slovakia (for GuardiaN)
-        "pl" to "Europe", // Poland (for pasha)
-        "be" to "Europe", // Belgium (for Ex6TenZ)
-        "nl" to "Europe", // Netherlands (for chrisJ)
-        "br" to "South America", // Brazil (for fnx, bit)
-        "de" to "Europe", // Denmark/Germany (for karrigan)
-        "fr" to "Europe",  //
-        "se" to "Europe",
-        "no" to "Europe"// no
+        // 欧洲
+        "ba" to "Europe", // Bosnia and Herzegovina
+        "dk" to "Europe", // Denmark
+        "sk" to "Europe", // Slovakia
+        "pl" to "Europe", // Poland
+        "be" to "Europe", // Belgium
+        "nl" to "Europe", // Netherlands
+        "de" to "Europe", // Germany
+        "fr" to "Europe", // France
+        "se" to "Europe", // Sweden
+        "no" to "Europe", // Norway
+        "fi" to "Europe", // Finland
+        "gb" to "Europe", // United Kingdom
+        "es" to "Europe", // Spain
+        "it" to "Europe", // Italy
+        "pt" to "Europe", // Portugal
+        "at" to "Europe", // Austria
+        "ch" to "Europe", // Switzerland
+        "cz" to "Europe", // Czech Republic
+        "hu" to "Europe", // Hungary
+        "ro" to "Europe", // Romania
+        "bg" to "Europe", // Bulgaria
+        "rs" to "Europe", // Serbia
+        "hr" to "Europe", // Croatia
+        "si" to "Europe", // Slovenia
+        "mk" to "Europe", // North Macedonia
+        "al" to "Europe", // Albania
+        "me" to "Europe", // Montenegro
+        "ee" to "Europe", // Estonia
+        "lv" to "Europe", // Latvia
+        "lt" to "Europe", // Lithuania
+        "ie" to "Europe", // Ireland
+        "is" to "Europe", // Iceland
+        "gr" to "Europe", // Greece
+        "cy" to "Europe", // Cyprus
+
+        // 独联体 (CIS)
+        "ru" to "CIS", // Russia
+        "ua" to "CIS", // Ukraine
+        "by" to "CIS", // Belarus
+        "kz" to "CIS", // Kazakhstan
+        "uz" to "CIS", // Uzbekistan
+        "tm" to "CIS", // Turkmenistan
+        "kg" to "CIS", // Kyrgyzstan
+        "tj" to "CIS", // Tajikistan
+        "am" to "CIS", // Armenia
+        "az" to "CIS", // Azerbaijan
+        "ge" to "CIS", // Georgia
+        "md" to "CIS", // Moldova
+
+        // 北美洲
+        "us" to "North America", // United States
+        "ca" to "North America", // Canada
+        "mx" to "North America", // Mexico
+
+        // 南美洲
+        "br" to "South America", // Brazil
+        "ar" to "South America", // Argentina
+        "cl" to "South America", // Chile
+        "pe" to "South America", // Peru
+        "co" to "South America", // Colombia
+        "ve" to "South America", // Venezuela
+        "bo" to "South America", // Bolivia
+        "py" to "South America", // Paraguay
+        "uy" to "South America", // Uruguay
+        "ec" to "South America", // Ecuador
+        "gy" to "South America", // Guyana
+        "sr" to "South America", // Suriname
+
+        // 亚洲（包含中东和大洋洲）
+        "tr" to "Asia", // Turkey
+        "il" to "Asia", // Israel
+        "cn" to "Asia", // China
+        "jp" to "Asia", // Japan
+        "kr" to "Asia", // South Korea
+        "au" to "Asia", // Australia (归为大洋洲，但按需求归入亚洲)
+        "nz" to "Asia", // New Zealand (归为大洋洲，但按需求归入亚洲)
+        "in" to "Asia", // India
+        "id" to "Asia", // Indonesia
+        "ph" to "Asia", // Philippines
+        "th" to "Asia", // Thailand
+        "vn" to "Asia", // Vietnam
+        "my" to "Asia", // Malaysia
+        "sg" to "Asia", // Singapore
+        "sa" to "Asia", // Saudi Arabia (中东)
+        "ae" to "Asia", // United Arab Emirates (中东)
+        "qa" to "Asia", // Qatar (中东)
+        "kw" to "Asia", // Kuwait (中东)
+        "bh" to "Asia", // Bahrain (中东)
+        "om" to "Asia", // Oman (中东)
+        "ye" to "Asia", // Yemen (中东)
+        "jo" to "Asia", // Jordan (中东)
+        "lb" to "Asia", // Lebanon (中东)
+        "sy" to "Asia", // Syria (中东)
+        "iq" to "Asia", // Iraq (中东)
+        "ir" to "Asia", // Iran (中东)
+        "pk" to "Asia", // Pakistan
+        "af" to "Asia", // Afghanistan
+        "bd" to "Asia", // Bangladesh
+        "lk" to "Asia", // Sri Lanka
+        "np" to "Asia", // Nepal
+        "bt" to "Asia", // Bhutan
+        "mm" to "Asia", // Myanmar
+        "kh" to "Asia", // Cambodia
+        "la" to "Asia", // Laos
+        "mn" to "Asia", // Mongolia
+        "pg" to "Asia", // Papua New Guinea (大洋洲，但按需求归入亚洲)
+        "fj" to "Asia"  // Fiji (大洋洲，但按需求归入亚洲)
     )
+
 
     // 国家名称到缩写的映射
     val countryToCode = mapOf(
+        // 欧洲
         "Bosnia and Herzegovina" to "ba",
-        "Turkey" to "tr",
-        "Israel" to "il",
-        "Russia" to "ru",
-        "Ukraine" to "ua",
         "Denmark" to "dk",
         "Slovakia" to "sk",
         "Poland" to "pl",
         "Belgium" to "be",
         "Netherlands" to "nl",
-        "Brazil" to "br",
         "Germany" to "de",
-        // 根据你的 CSV 文件添加更多映射
-        "United States" to "us",
         "France" to "fr",
         "Sweden" to "se",
         "Norway" to "no",
         "Finland" to "fi",
-        "Australia" to "au",
+        "United Kingdom" to "gb",
+        "Spain" to "es",
+        "Italy" to "it",
+        "Portugal" to "pt",
+        "Austria" to "at",
+        "Switzerland" to "ch",
+        "Czech Republic" to "cz",
+        "Hungary" to "hu",
+        "Romania" to "ro",
+        "Bulgaria" to "bg",
+        "Serbia" to "rs",
+        "Croatia" to "hr",
+        "Slovenia" to "si",
+        "North Macedonia" to "mk",
+        "Albania" to "al",
+        "Montenegro" to "me",
+        "Estonia" to "ee",
+        "Latvia" to "lv",
+        "Lithuania" to "lt",
+        "Ireland" to "ie",
+        "Iceland" to "is",
+        "Greece" to "gr",
+        "Cyprus" to "cy",
+
+        // 独联体 (CIS)
+        "Russia" to "ru",
+        "Ukraine" to "ua",
+        "Belarus" to "by",
+        "Kazakhstan" to "kz",
+        "Uzbekistan" to "uz",
+        "Turkmenistan" to "tm",
+        "Kyrgyzstan" to "kg",
+        "Tajikistan" to "tj",
+        "Armenia" to "am",
+        "Azerbaijan" to "az",
+        "Georgia" to "ge",
+        "Moldova" to "md",
+
+        // 北美洲
+        "United States" to "us",
         "Canada" to "ca",
+        "Mexico" to "mx",
+
+        // 南美洲
+        "Brazil" to "br",
+        "Argentina" to "ar",
+        "Chile" to "cl",
+        "Peru" to "pe",
+        "Colombia" to "co",
+        "Venezuela" to "ve",
+        "Bolivia" to "bo",
+        "Paraguay" to "py",
+        "Uruguay" to "uy",
+        "Ecuador" to "ec",
+        "Guyana" to "gy",
+        "Suriname" to "sr",
+
+        // 亚洲（包含中东和大洋洲）
+        "Turkey" to "tr",
+        "Israel" to "il",
         "China" to "cn",
         "Japan" to "jp",
-        "South Korea" to "kr"
-    )
+        "South Korea" to "kr",
+        "Australia" to "au",
+        "New Zealand" to "nz",
+        "India" to "in",
+        "Indonesia" to "id",
+        "Philippines" to "ph",
+        "Thailand" to "th",
+        "Vietnam" to "vn",
+        "Malaysia" to "my",
+        "Singapore" to "sg",
+        "Saudi Arabia" to "sa",
+        "United Arab Emirates" to "ae",
+        "Qatar" to "qa",
+        "Kuwait" to "kw",
+        "Bahrain" to "bh",
+        "Oman" to "om",
+        "Yemen" to "ye",
+        "Jordan" to "jo",
+        "Lebanon" to "lb",
+        "Syria" to "sy",
+        "Iraq" to "iq",
+        "Iran" to "ir",
+        "Pakistan" to "pk",
+        "Afghanistan" to "af",
+        "Bangladesh" to "bd",
+        "Sri Lanka" to "lk",
+        "Nepal" to "np",
+        "Bhutan" to "bt",
+        "Myanmar" to "mm",
+        "Cambodia" to "kh",
+        "Laos" to "la",
+        "Mongolia" to "mn",
+        "Papua New Guinea" to "pg",
+        "Fiji" to "fj",
 
-    // 角色的类别映射
-    val roleCategories = mapOf(
-        "Rifler" to "Rifler",
-        "AWPer" to "AWPer",
-        "Coach" to "Support",
-        "IGL" to "Support"
+        // 非洲（如果有需要可以添加）
+        "South Africa" to "za",
+        "Nigeria" to "ng",
+        "Egypt" to "eg",
+        "Kenya" to "ke",
+        "Ghana" to "gh",
+        "Algeria" to "dz",
+        "Morocco" to "ma",
+        "Tunisia" to "tn",
+        "Uganda" to "ug",
+        "Ethiopia" to "et"
     )
 
 
