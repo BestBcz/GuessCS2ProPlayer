@@ -10,7 +10,7 @@ import java.io.File
 fun drawGuessTable(gameState: GameState): File {
     val width = 700
     val maxRows = 11 // 固定 11 行表格（1 行表头 + 10 行猜测）
-    val rowHeight = 40f // 格子高度
+    val rowHeight = 35f // 格子高度
     val rowSpacing = 10f
     val tableHeight = rowHeight + rowSpacing + (maxRows - 1) * (rowHeight + rowSpacing) // 表头 + 10 行内容
     val height = (tableHeight + 40f).toInt() // 画布高度，留一些边距
@@ -161,15 +161,20 @@ fun drawGuessTable(gameState: GameState): File {
                     3 -> { // AGE
                         val guessedAge = player.age
                         val targetAge = gameState.targetPlayer.age
-                        if (guessedAge == targetAge) {
-                            Shader.makeLinearGradient(
+                        when {
+                            guessedAge == targetAge -> Shader.makeLinearGradient(
                                 x, y - rowHeight / 2, x, y + rowHeight / 2,
                                 intArrayOf(Color.makeARGB(100, 0, 180, 0), Color.makeARGB(100, 0, 140, 0)), // 更亮的绿色
                                 null,
                                 GradientStyle(tileMode = FilterTileMode.CLAMP, isPremul = true, localMatrix = null)
                             )
-                        } else {
-                            Shader.makeLinearGradient(
+                            Math.abs(guessedAge - targetAge) <= 2 -> Shader.makeLinearGradient(
+                                x, y - rowHeight / 2, x, y + rowHeight / 2,
+                                intArrayOf(Color.makeARGB(100, 255, 255, 0), Color.makeARGB(100, 200, 200, 0)), // 更亮的黄色
+                                null,
+                                GradientStyle(tileMode = FilterTileMode.CLAMP, isPremul = true, localMatrix = null)
+                            )
+                            else -> Shader.makeLinearGradient(
                                 x, y - rowHeight / 2, x, y + rowHeight / 2,
                                 intArrayOf(Color.makeARGB(100, 60, 60, 60), Color.makeARGB(100, 40, 40, 40)),
                                 null,

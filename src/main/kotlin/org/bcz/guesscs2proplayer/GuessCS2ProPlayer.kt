@@ -64,7 +64,31 @@ object GuessCS2ProPlayer : KotlinPlugin(
         if (!::players.isInitialized) {
             throw IllegalStateException("Players list is not initialized")
         }
-        return players.find { it.name.equals(name, ignoreCase = true) }
+
+        // 规范化输入：移除空格、特殊字符，转换为小写
+        val normalizedInput = name.lowercase().replace(Regex("[^a-z0-9]"), "")
+        // 将 "i" 替换为 "1" 和 "1" 替换为 "i"，生成可能的变体
+        val inputWithI = normalizedInput.replace("1", "i")
+        val inputWith1 = normalizedInput.replace("i", "1")
+
+        return players.find { player ->
+            // 规范化选手名字：移除空格、特殊字符，转换为小写
+            val normalizedPlayerName = player.name.lowercase().replace(Regex("[^a-z0-9]"), "")
+            // 将选手名字中的 "i" 替换为 "1" 和 "1" 替换为 "i"，生成可能的变体
+            val playerNameWithI = normalizedPlayerName.replace("1", "i")
+            val playerNameWith1 = normalizedPlayerName.replace("i", "1")
+
+            // 匹配条件：
+            // 1. 完全匹配（忽略大小写、空格和特殊字符）
+            // 2. "i" 和 "1" 替换后的匹配
+            // 3. 缩写匹配（输入是选手名字的一部分）
+            normalizedPlayerName == normalizedInput ||
+                    playerNameWithI == inputWithI ||
+                    playerNameWith1 == inputWith1 ||
+                    normalizedPlayerName.contains(normalizedInput) ||
+                    playerNameWithI.contains(inputWithI) ||
+                    playerNameWith1.contains(inputWith1)
+        }
     }
 
     override fun onEnable() {
@@ -104,6 +128,13 @@ object GuessCS2ProPlayer : KotlinPlugin(
 
                 if (guessedPlayer == null) {
                     logger.info("Player not found: $message")
+                    return@subscribeAlways
+                }
+                // 检查是否重复猜测
+                val isDuplicateGuess = gameState.guesses.any { it.second.name.equals(guessedPlayer.name, ignoreCase = true) }
+                if (isDuplicateGuess) {
+                    logger.info("Duplicate guess detected: ${guessedPlayer.name} by $senderName")
+                    group.sendMessage("玩家 ${guessedPlayer.name} 已经被猜测过，请尝试其他选手！")
                     return@subscribeAlways
                 }
 
@@ -240,6 +271,7 @@ object GuessCS2ProPlayer : KotlinPlugin(
         "us" to "North America", // United States
         "ca" to "North America", // Canada
         "mx" to "North America", // Mexico
+        "gt" to "North America", // Guatemala
 
         // 南美洲
         "br" to "South America", // Brazil
@@ -353,6 +385,7 @@ object GuessCS2ProPlayer : KotlinPlugin(
         "United States" to "us",
         "Canada" to "ca",
         "Mexico" to "mx",
+        "Guatemala" to "gt", // 添加危地马拉
 
         // 南美洲
         "Brazil" to "br",
