@@ -42,8 +42,8 @@ https://blast.tv/counter-strikle/multiplayer
 - /结束猜选手
 
 _指令需要给予相关权限才可以使用_
-- org.bcz.guesscs2proplayer:command.开始猜选手
-- org.bcz.guesscs2proplayer:command.结束猜选手
+- org.bcz.guesscs2proplayer.command.开始猜选手
+- org.bcz.guesscs2proplayer.command.结束猜选手
 
 -----------------------------------------
 ### 📷插件截图
