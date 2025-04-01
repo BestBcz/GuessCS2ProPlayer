@@ -81,13 +81,9 @@ object GuessCS2ProPlayer : KotlinPlugin(
             // 匹配条件：
             // 1. 完全匹配（忽略大小写、空格和特殊字符）
             // 2. "i" 和 "1" 替换后的匹配
-            // 3. 缩写匹配（输入是选手名字的一部分）
             normalizedPlayerName == normalizedInput ||
                     playerNameWithI == inputWithI ||
-                    playerNameWith1 == inputWith1 ||
-                    normalizedPlayerName.contains(normalizedInput) ||
-                    playerNameWithI.contains(inputWithI) ||
-                    playerNameWith1.contains(inputWith1)
+                    playerNameWith1 == inputWith1
         }
     }
 
