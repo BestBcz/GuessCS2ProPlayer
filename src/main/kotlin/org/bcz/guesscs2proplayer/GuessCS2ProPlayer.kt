@@ -19,6 +19,7 @@ import java.io.BufferedReader
 import java.io.File
 import java.io.FileReader
 import kotlin.random.Random
+import net.mamoe.mirai.message.data.MessageChain
 
 
 
@@ -27,7 +28,7 @@ object GuessCS2ProPlayer : KotlinPlugin(
     JvmPluginDescription(
         id = "org.bcz.guesscs2proplayer",
         name = "CS2猜职业哥小游戏",
-        version = "0.0.3"
+        version = "0.0.4"
     ) {
         author("Bcz")
         dependsOn("xyz.cssxsh.mirai.plugin.mirai-skia-plugin", ">= 1.1.0", false)
@@ -70,6 +71,9 @@ object GuessCS2ProPlayer : KotlinPlugin(
         // 将 "i" 替换为 "1" 和 "1" 替换为 "i"，生成可能的变体
         val inputWithI = normalizedInput.replace("1", "i")
         val inputWith1 = normalizedInput.replace("i", "1")
+        // 将 "o" 替换为 "0" 和 "0" 替换为 "o"，生成可能的变体
+        val inputWithO = inputWithI.replace("0", "o")
+        val inputWith0 = inputWith1.replace("o", "0")
 
         return players.find { player ->
             // 规范化选手名字：移除空格、特殊字符，转换为小写
@@ -77,18 +81,23 @@ object GuessCS2ProPlayer : KotlinPlugin(
             // 将选手名字中的 "i" 替换为 "1" 和 "1" 替换为 "i"，生成可能的变体
             val playerNameWithI = normalizedPlayerName.replace("1", "i")
             val playerNameWith1 = normalizedPlayerName.replace("i", "1")
+            // 将选手名字中的 "o" 替换为 "0" 和 "0" 替换为 "o"，生成可能的变体
+            val playerNameWithO = playerNameWithI.replace("0", "o")
+            val playerNameWith0 = playerNameWith1.replace("o", "0")
 
             // 匹配条件：
             // 1. 完全匹配（忽略大小写、空格和特殊字符）
             // 2. "i" 和 "1" 替换后的匹配
+            // 3. "o" 和 "0" 替换后的匹配
             normalizedPlayerName == normalizedInput ||
                     playerNameWithI == inputWithI ||
-                    playerNameWith1 == inputWith1
+                    playerNameWith1 == inputWith1 ||
+                    playerNameWithO == inputWithO ||
+                    playerNameWith0 == inputWith0
         }
     }
 
     override fun onEnable() {
-
         // 加载 CSV 文件
         logger.info("Checking for players.csv in ${dataFolder.path}")
         val csvFile = File(dataFolder, "players.csv")
@@ -116,68 +125,108 @@ object GuessCS2ProPlayer : KotlinPlugin(
             val groupId = group.id
             val message = event.message.contentToString().trim()
             val senderName = sender.nick
+            val group = event.group
 
             if (hasGameState(groupId)) {
+                // 存储消息链、临时文件和是否需要发送消息
+                var messageChain: MessageChain? = null
+                var tempFile: File? = null
+                var shouldSendMessage = true
 
-                val gameState = getGameState(groupId)!!
-                val guessedPlayer = findPlayer(message)
-
-                if (guessedPlayer == null) {
-                    logger.info("Player not found: $message")
-                    return@subscribeAlways
-                }
-                // 检查是否重复猜测
-                val isDuplicateGuess = gameState.guesses.any { it.second.name.equals(guessedPlayer.name, ignoreCase = true) }
-                if (isDuplicateGuess) {
-                    logger.info("Duplicate guess detected: ${guessedPlayer.name} by $senderName")
-                    group.sendMessage("玩家 ${guessedPlayer.name} 已经被猜测过，请尝试其他选手！")
-                    return@subscribeAlways
-                }
-
-                logger.info("Step 13: Player found: ${guessedPlayer.name}, processing guess")
-                gameState.guesses.add(Pair(senderName, guessedPlayer))
-                gameState.guessesLeft--
-
-                val tempFile = try {
-                    logger.info("Step 14: Drawing guess table")
-                    drawGuessTable(gameState)
-                } catch (e: Exception) {
-                    logger.error("Failed to draw table: ${e.message}", e)
-                    group.sendMessage("生成表格失败，请稍后重试。")
-                    return@subscribeAlways
-                }
-
-                val imageMessage = try {
-                    if (!tempFile.exists() || tempFile.length() == 0L) {
-                        throw IllegalStateException("Temporary file is empty or does not exist: ${tempFile.absolutePath}")
-                    }
-                    logger.info("Temporary image saved to ${tempFile.absolutePath}, size: ${tempFile.length()} bytes")
-
-                    val uploadedImage = tempFile.toExternalResource().use { resource ->
-                        group.uploadImage(resource)
+                // 使用 groupId 作为锁对象，确保同一群的猜测按顺序处理
+                synchronized(groupId) {
+                    // 再次检查游戏状态，确保游戏未结束
+                    if (!hasGameState(groupId)) {
+                        logger.info("Game has already ended for group $groupId, ignoring guess: $message")
+                        shouldSendMessage = false
+                        return@subscribeAlways
                     }
 
-                    tempFile.delete()
-                    uploadedImage
-                } catch (e: Exception) {
-                    logger.error("Step 18: Failed to upload image: ${e.message}", e)
-                    group.sendMessage("图片上传失败，请稍后重试。")
-                    return@subscribeAlways
+                    val gameState = getGameState(groupId)!!
+                    val guessedPlayer = findPlayer(message)
+
+                    if (guessedPlayer == null) {
+                        logger.info("Player not found: $message")
+                        messageChain = buildMessageChain {
+                            +PlainText("未找到选手：$message")
+                        }
+                        return@subscribeAlways
+                    }
+
+                    // 检查是否重复猜测
+                    val isDuplicateGuess = gameState.guesses.any { it.second.name.equals(guessedPlayer.name, ignoreCase = true) }
+                    if (isDuplicateGuess) {
+                        logger.info("Duplicate guess detected: ${guessedPlayer.name}")
+                        messageChain = buildMessageChain {
+                            +PlainText("该选手已被猜测过，请尝试其他选手！")
+                        }
+                        return@subscribeAlways
+                    }
+
+                    logger.info("Step 13: Player found: ${guessedPlayer.name}, processing guess")
+                    gameState.guesses.add(Pair(senderName, guessedPlayer))
+                    gameState.guessesLeft--
+
+                    // 生成临时文件，但不上传
+                    tempFile = try {
+                        logger.info("Step 14: Drawing guess table")
+                        drawGuessTable(gameState)
+                    } catch (e: Exception) {
+                        logger.error("Failed to draw table: ${e.message}", e)
+                        messageChain = buildMessageChain {
+                            +PlainText("生成表格失败，请稍后重试。")
+                        }
+                        return@subscribeAlways
+                    }
+
+                    // 构建消息链，但不发送
+                    messageChain = buildMessageChain {
+                        if (guessedPlayer.name == gameState.targetPlayer.name) {
+                            +PlainText("恭喜！${senderName} 猜对了选手：${gameState.targetPlayer.name}")
+                            removeGameState(groupId)
+                        } else if (gameState.guessesLeft == 0) {
+                            +PlainText("游戏结束！正确选手为 ${gameState.targetPlayer.name}")
+                            removeGameState(groupId)
+                        } else {
+                            +PlainText("${senderName} 猜测了 ${guessedPlayer.name}，剩余 ${gameState.guessesLeft} 次猜测机会。")
+                        }
+                    }
                 }
 
-                group.sendMessage(buildMessageChain {
-                    +imageMessage
-                    +PlainText("\n")
-                    if (guessedPlayer.name == gameState.targetPlayer.name) {
-                        +PlainText("恭喜！${senderName} 猜对了选手：${gameState.targetPlayer.name}")
-                        removeGameState(groupId)
-                    } else if (gameState.guessesLeft == 0) {
-                        +PlainText("游戏结束！正确选手为 ${gameState.targetPlayer.name}")
-                        removeGameState(groupId)
-                    } else {
-                        +PlainText("${senderName} 猜测了 ${guessedPlayer.name}，剩余 ${gameState.guessesLeft} 次猜测机会。")
+                // 在 synchronized 块外执行 uploadImage 和 sendMessage
+                if (shouldSendMessage) {
+                    if (tempFile != null) {
+                        val imageMessage = try {
+                            if (!tempFile!!.exists() || tempFile!!.length() == 0L) {
+                                throw IllegalStateException("Temporary file is empty or does not exist: ${tempFile!!.absolutePath}")
+                            }
+                            logger.info("Temporary image saved to ${tempFile!!.absolutePath}, size: ${tempFile!!.length()} bytes")
+
+                            val uploadedImage = tempFile!!.toExternalResource().use { resource ->
+                                group.uploadImage(resource)
+                            }
+
+                            tempFile!!.delete()
+                            uploadedImage
+                        } catch (e: Exception) {
+                            logger.error("Step 18: Failed to upload image: ${e.message}", e)
+                            group.sendMessage("图片上传失败，请稍后重试。")
+                            return@subscribeAlways
+                        }
+
+                        // 将图片添加到消息链
+                        messageChain = buildMessageChain {
+                            +imageMessage
+                            +PlainText("\n")
+                            +messageChain!!
+                        }
                     }
-                })
+
+                    // 发送消息
+                    if (messageChain != null) {
+                        group.sendMessage(messageChain!!)
+                    }
+                }
             }
         }
     }
