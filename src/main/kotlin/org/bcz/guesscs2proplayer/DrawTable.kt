@@ -1,50 +1,42 @@
 package org.bcz.guesscs2proplayer
 
-import org.bcz.guesscs2proplayer.GuessCS2ProPlayer.loadSVGFromFile
-import org.bcz.guesscs2proplayer.GuessCS2ProPlayer.makeImage
+import org.bcz.guesscs2proplayer.utils.CountryUtils
 import org.jetbrains.skia.*
 import java.io.File
 import kotlin.random.Random
+import org.jetbrains.skia.svg.SVGDOM
 
-
-// 绘制表格并保存为文件
 fun drawGuessTable(gameState: GameState): File {
     val width = 700
     val maxRows = 11 // 固定 11 行表格（1 行表头 + 10 行猜测）
-    val rowHeight = 35f // 格子高度
+    val rowHeight = 35f
     val rowSpacing = 10f
-    val tableHeight = rowHeight + rowSpacing + (maxRows - 1) * (rowHeight + rowSpacing) // 表头 + 10 行内容
-    val height = (tableHeight + 40f).toInt() // 画布高度，留一些边距
+    val tableHeight = rowHeight + rowSpacing + (maxRows - 1) * (rowHeight + rowSpacing)
+    val height = (tableHeight + 40f).toInt()
 
-    // 创建 Skia 画布
     val surface = Surface.makeRasterN32Premul(width, height)
     val canvas = surface.canvas
 
-    // 绘制背景（深蓝色，偏黑）
     val backgroundPaint = Paint().apply {
-        color = Color.makeRGB(10, 20, 30) // 深蓝色偏黑
+        color = Color.makeRGB(10, 20, 30)
     }
     canvas.drawRect(Rect.makeXYWH(0f, 0f, width.toFloat(), height.toFloat()), backgroundPaint)
 
-    // 加载字体
     val typeface = Typeface.makeDefault()
     val font = Font(typeface, 16f)
     val textPaint = Paint().apply { color = Color.WHITE }
 
-    // 定义表格参数
     val headers = listOf("NAME", "TEAM", "NAT", "AGE", "ROLE", "MAJ APP")
     val columnWidths = listOf(120f, 140f, 80f, 60f, 120f, 80f)
     val tableWidth = columnWidths.sum() - 5f
-    val cornerRadius = 4f // 圆角半径
-    val outlineOffset = 5f // 白线与表格的距离
+    val cornerRadius = 4f
+    val outlineOffset = 5f
 
-    // 计算表格居中的位置
-    val tableX = (width - tableWidth) / 2 // 水平居中
-    val tableY = (height - tableHeight) / 2 // 垂直居中
+    val tableX = (width - tableWidth) / 2
+    val tableY = (height - tableHeight) / 2
 
-    // 绘制表格整体细白线轮廓（固定 11 行高度）
     val tableRect = Rect.makeXYWH(tableX, tableY, tableWidth, tableHeight)
-    val outlineRect = tableRect.inflate(outlineOffset) // 向外扩展白线轮廓
+    val outlineRect = tableRect.inflate(outlineOffset)
     val outlineRRect = outlineRect.toRRect(cornerRadius + outlineOffset)
     val outlinePaint = Paint().apply {
         color = Color.WHITE
@@ -53,63 +45,54 @@ fun drawGuessTable(gameState: GameState): File {
     }
     canvas.drawRRect(outlineRRect, outlinePaint)
 
-    // 绘制表头（连起来的格子，灰色，透明度 100）
     val headerRect = Rect.makeXYWH(tableX, tableY, tableWidth, rowHeight)
     val headerRRect = headerRect.toRRect(cornerRadius)
-    canvas.drawRectShadowAntiAlias(headerRRect, 1f, 1f, 2f, 1f, Color.makeRGB(0, 0, 0)) // 阴影减半
+    canvas.drawRectShadowAntiAlias(headerRRect, 1f, 1f, 2f, 1f, Color.makeRGB(0, 0, 0))
     val headerPaint = Paint().apply {
         shader = Shader.makeLinearGradient(
             tableX, tableY, tableX, tableY + rowHeight,
-            intArrayOf(Color.makeARGB(100, 90, 90, 90), Color.makeARGB(100, 70, 70, 70)), // 透明度 100
+            intArrayOf(Color.makeARGB(100, 90, 90, 90), Color.makeARGB(100, 70, 70, 70)),
             null,
-            GradientStyle(
-                tileMode = FilterTileMode.CLAMP,
-                isPremul = true,
-                localMatrix = null
-            )
+            GradientStyle(tileMode = FilterTileMode.CLAMP, isPremul = true, localMatrix = null)
         )
     }
     canvas.drawRRect(headerRRect, headerPaint)
 
-    // 绘制表头文字（水平和垂直居中）
     var x = tableX
     headers.forEachIndexed { index, header ->
         val textLine = TextLine.make(header, font)
         val textWidth = textLine.width
-        val textX = x + (columnWidths[index] - 5f - textWidth) / 2 // 水平居中
-        val textY = tableY + rowHeight / 2 - (font.metrics.ascent + font.metrics.descent) / 2 // 垂直居中
+        val textX = x + (columnWidths[index] - 5f - textWidth) / 2
+        val textY = tableY + rowHeight / 2 - (font.metrics.ascent + font.metrics.descent) / 2
         canvas.drawTextLine(textLine, textX, textY, textPaint)
         x += columnWidths[index]
     }
 
-    // 绘制表格内容（每行格子分开，颜色比灰色深，透明度 100）
     gameState.guesses.forEachIndexed { index, (_, player) ->
-        val y = tableY + rowHeight + rowSpacing * 2 + index * (rowHeight + rowSpacing) // 表头与第一行的间距
+        val y = tableY + rowHeight + rowSpacing * 2 + index * (rowHeight + rowSpacing)
         x = tableX
 
-        // 每个字段单独绘制格子
         val fields = listOf(
             player.name,
             player.team,
             player.nationality,
             player.age.toString(),
             player.position,
-            "unknown" // MAJ APP 列固定为 "unknown"
+            "unknown"
         )
 
         fields.forEachIndexed { fieldIndex, field ->
             val cellRect = Rect.makeXYWH(x, y - rowHeight / 2, columnWidths[fieldIndex] - 5f, rowHeight)
             val cellRRect = cellRect.toRRect(cornerRadius)
-            canvas.drawRectShadowAntiAlias(cellRRect, 1f, 1f, 2f, 1f, Color.makeRGB(0, 0, 0)) // 阴影减半
+            canvas.drawRectShadowAntiAlias(cellRRect, 1f, 1f, 2f, 1f, Color.makeRGB(0, 0, 0))
 
-            // 确定格子颜色（比表头灰色深，透明度 100）
             val cellPaint = Paint().apply {
                 shader = when (fieldIndex) {
-                    0 -> { // NAME
+                    0 -> {
                         if (player.name == gameState.targetPlayer.name) {
                             Shader.makeLinearGradient(
                                 x, y - rowHeight / 2, x, y + rowHeight / 2,
-                                intArrayOf(Color.makeARGB(100, 0, 180, 0), Color.makeARGB(100, 0, 140, 0)), // 更亮的绿色
+                                intArrayOf(Color.makeARGB(100, 0, 180, 0), Color.makeARGB(100, 0, 140, 0)),
                                 null,
                                 GradientStyle(tileMode = FilterTileMode.CLAMP, isPremul = true, localMatrix = null)
                             )
@@ -122,11 +105,11 @@ fun drawGuessTable(gameState: GameState): File {
                             )
                         }
                     }
-                    1 -> { // TEAM
+                    1 -> {
                         if (player.team == gameState.targetPlayer.team) {
                             Shader.makeLinearGradient(
                                 x, y - rowHeight / 2, x, y + rowHeight / 2,
-                                intArrayOf(Color.makeARGB(100, 0, 180, 0), Color.makeARGB(100, 0, 140, 0)), // 更亮的绿色
+                                intArrayOf(Color.makeARGB(100, 0, 180, 0), Color.makeARGB(100, 0, 140, 0)),
                                 null,
                                 GradientStyle(tileMode = FilterTileMode.CLAMP, isPremul = true, localMatrix = null)
                             )
@@ -139,19 +122,19 @@ fun drawGuessTable(gameState: GameState): File {
                             )
                         }
                     }
-                    2 -> { // NAT
-                        val guessedContinent = GuessCS2ProPlayer.countryContinents[GuessCS2ProPlayer.countryToCode[player.nationality]?.lowercase() ?: player.nationality.lowercase()] ?: "Unknown"
-                        val targetContinent = GuessCS2ProPlayer.countryContinents[GuessCS2ProPlayer.countryToCode[gameState.targetPlayer.nationality]?.lowercase() ?: gameState.targetPlayer.nationality.lowercase()] ?: "Unknown"
+                    2 -> {
+                        val guessedContinent = CountryUtils.countryContinents[CountryUtils.countryToCode[player.nationality]?.lowercase() ?: player.nationality.lowercase()] ?: "Unknown"
+                        val targetContinent = CountryUtils.countryContinents[CountryUtils.countryToCode[gameState.targetPlayer.nationality]?.lowercase() ?: gameState.targetPlayer.nationality.lowercase()] ?: "Unknown"
                         when {
                             player.nationality == gameState.targetPlayer.nationality -> Shader.makeLinearGradient(
                                 x, y - rowHeight / 2, x, y + rowHeight / 2,
-                                intArrayOf(Color.makeARGB(100, 0, 180, 0), Color.makeARGB(100, 0, 140, 0)), // 更亮的绿色
+                                intArrayOf(Color.makeARGB(100, 0, 180, 0), Color.makeARGB(100, 0, 140, 0)),
                                 null,
                                 GradientStyle(tileMode = FilterTileMode.CLAMP, isPremul = true, localMatrix = null)
                             )
                             guessedContinent == targetContinent && guessedContinent != "Unknown" -> Shader.makeLinearGradient(
                                 x, y - rowHeight / 2, x, y + rowHeight / 2,
-                                intArrayOf(Color.makeARGB(100, 255, 255, 0), Color.makeARGB(100, 200, 200, 0)), // 更亮的黄色
+                                intArrayOf(Color.makeARGB(100, 255, 255, 0), Color.makeARGB(100, 200, 200, 0)),
                                 null,
                                 GradientStyle(tileMode = FilterTileMode.CLAMP, isPremul = true, localMatrix = null)
                             )
@@ -163,19 +146,19 @@ fun drawGuessTable(gameState: GameState): File {
                             )
                         }
                     }
-                    3 -> { // AGE
+                    3 -> {
                         val guessedAge = player.age
                         val targetAge = gameState.targetPlayer.age
                         when {
                             guessedAge == targetAge -> Shader.makeLinearGradient(
                                 x, y - rowHeight / 2, x, y + rowHeight / 2,
-                                intArrayOf(Color.makeARGB(100, 0, 180, 0), Color.makeARGB(100, 0, 140, 0)), // 更亮的绿色
+                                intArrayOf(Color.makeARGB(100, 0, 180, 0), Color.makeARGB(100, 0, 140, 0)),
                                 null,
                                 GradientStyle(tileMode = FilterTileMode.CLAMP, isPremul = true, localMatrix = null)
                             )
                             Math.abs(guessedAge - targetAge) <= 2 -> Shader.makeLinearGradient(
                                 x, y - rowHeight / 2, x, y + rowHeight / 2,
-                                intArrayOf(Color.makeARGB(100, 255, 255, 0), Color.makeARGB(100, 200, 200, 0)), // 更亮的黄色
+                                intArrayOf(Color.makeARGB(100, 255, 255, 0), Color.makeARGB(100, 200, 200, 0)),
                                 null,
                                 GradientStyle(tileMode = FilterTileMode.CLAMP, isPremul = true, localMatrix = null)
                             )
@@ -187,11 +170,11 @@ fun drawGuessTable(gameState: GameState): File {
                             )
                         }
                     }
-                    4 -> { // ROLE
+                    4 -> {
                         if (player.position == gameState.targetPlayer.position) {
                             Shader.makeLinearGradient(
                                 x, y - rowHeight / 2, x, y + rowHeight / 2,
-                                intArrayOf(Color.makeARGB(100, 0, 180, 0), Color.makeARGB(100, 0, 140, 0)), // 更亮的绿色
+                                intArrayOf(Color.makeARGB(100, 0, 180, 0), Color.makeARGB(100, 0, 140, 0)),
                                 null,
                                 GradientStyle(tileMode = FilterTileMode.CLAMP, isPremul = true, localMatrix = null)
                             )
@@ -204,7 +187,7 @@ fun drawGuessTable(gameState: GameState): File {
                             )
                         }
                     }
-                    5 -> { // MAJ APP
+                    5 -> {
                         Shader.makeLinearGradient(
                             x, y - rowHeight / 2, x, y + rowHeight / 2,
                             intArrayOf(Color.makeARGB(100, 60, 60, 60), Color.makeARGB(100, 40, 40, 40)),
@@ -222,25 +205,23 @@ fun drawGuessTable(gameState: GameState): File {
             }
             canvas.drawRRect(cellRRect, cellPaint)
 
-            // 绘制内容
-            if (fieldIndex == 2) { // NAT 列显示国旗
+            if (fieldIndex == 2) {
                 try {
-                    val svg = loadSVGFromFile(player.nationality)
+                    val svg = CountryUtils.loadSVGFromFile(GuessCS2ProPlayer.dataFolder, player.nationality)
                     val flagImage = svg.makeImage(24f, 24f)
-                    val flagRect = Rect.makeXYWH(x + (columnWidths[fieldIndex] - 5f - 24f) / 2, y - 12f, 24f, 24f).toRRect(4f) // 国旗水平居中
+                    val flagRect = Rect.makeXYWH(x + (columnWidths[fieldIndex] - 5f - 24f) / 2, y - 12f, 24f, 24f).toRRect(4f)
                     canvas.drawImageRRect(flagImage, flagRect)
                     GuessCS2ProPlayer.logger.info("Successfully rendered flag for nationality: ${player.nationality}")
                 } catch (e: Exception) {
                     GuessCS2ProPlayer.logger.error("Failed to render flag for nationality: ${player.nationality}, error: ${e.message}", e)
-                    // 显示国家缩写（如果有映射）或原始国家名称
-                    val displayText = GuessCS2ProPlayer.countryToCode[player.nationality] ?: player.nationality
+                    val displayText = CountryUtils.countryToCode[player.nationality] ?: player.nationality
                     val textLine = TextLine.make(displayText, font)
                     val textWidth = textLine.width
-                    val textX = x + (columnWidths[fieldIndex] - 5f - textWidth) / 2 // 水平居中
-                    val textY = y - (font.metrics.ascent + font.metrics.descent) / 2 // 垂直居中
+                    val textX = x + (columnWidths[fieldIndex] - 5f - textWidth) / 2
+                    val textY = y - (font.metrics.ascent + font.metrics.descent) / 2
                     canvas.drawTextLine(textLine, textX, textY, textPaint)
                 }
-            } else if (fieldIndex == 3) { // AGE
+            } else if (fieldIndex == 3) {
                 val ageText = when {
                     player.age == gameState.targetPlayer.age -> player.age.toString()
                     player.age < gameState.targetPlayer.age -> "${player.age} ↑"
@@ -248,14 +229,14 @@ fun drawGuessTable(gameState: GameState): File {
                 }
                 val textLine = TextLine.make(ageText, font)
                 val textWidth = textLine.width
-                val textX = x + (columnWidths[fieldIndex] - 5f - textWidth) / 2 // 水平居中
-                val textY = y - (font.metrics.ascent + font.metrics.descent) / 2 // 垂直居中
+                val textX = x + (columnWidths[fieldIndex] - 5f - textWidth) / 2
+                val textY = y - (font.metrics.ascent + font.metrics.descent) / 2
                 canvas.drawTextLine(textLine, textX, textY, textPaint)
             } else {
                 val textLine = TextLine.make(field, font)
                 val textWidth = textLine.width
-                val textX = x + (columnWidths[fieldIndex] - 5f - textWidth) / 2 // 水平居中
-                val textY = y - (font.metrics.ascent + font.metrics.descent) / 2 // 垂直居中
+                val textX = x + (columnWidths[fieldIndex] - 5f - textWidth) / 2
+                val textY = y - (font.metrics.ascent + font.metrics.descent) / 2
                 canvas.drawTextLine(textLine, textX, textY, textPaint)
             }
 
@@ -263,13 +244,16 @@ fun drawGuessTable(gameState: GameState): File {
         }
     }
 
-    // 将画布内容保存为图片
     val image = surface.makeImageSnapshot()
     val data = image.encodeToData(EncodedImageFormat.PNG)
-// 使用时间戳和随机数生成唯一的临时文件名
     val uniqueId = "${System.currentTimeMillis()}_${Random.nextInt(10000)}"
     val tempFile = File.createTempFile("guesscs2player_$uniqueId", ".png")
     tempFile.writeBytes(data!!.bytes)
 
     return tempFile
+}
+
+fun SVGDOM.makeImage(width: Float, height: Float): Image {
+    setContainerSize(width, height)
+    return Surface.makeRasterN32Premul(width.toInt(), height.toInt()).apply { render(canvas) }.makeImageSnapshot()
 }
