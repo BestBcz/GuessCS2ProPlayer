@@ -27,6 +27,7 @@ object GameCommands : CompositeCommand(
             return
         }
 
+
         val targetPlayer = PlayerManager.getRandomPlayer()
         GameStateManager.startGame(groupId, GameState(groupId, targetPlayer))
         sendMessage("游戏开始！群内成员可以直接发送选手名字进行猜测（例如：s1mple），共有 10 次机会。")

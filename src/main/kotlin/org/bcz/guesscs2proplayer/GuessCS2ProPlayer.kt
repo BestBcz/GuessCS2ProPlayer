@@ -16,7 +16,7 @@ object GuessCS2ProPlayer : KotlinPlugin(
     JvmPluginDescription(
         id = "org.bcz.guesscs2proplayer",
         name = "CS2猜职业哥小游戏",
-        version = "0.0.4"
+        version = "0.0.6"
     ) {
         author("Bcz")
         dependsOn("xyz.cssxsh.mirai.plugin.mirai-skia-plugin", ">= 1.1.0", false)
@@ -41,6 +41,7 @@ object GuessCS2ProPlayer : KotlinPlugin(
             val message = event.message.contentToString().trim()
             val senderName = sender.nick
             val group = event.group
+            var duplicateGuessMessage: String? = null
 
             if (GameStateManager.hasGameState(groupId)) {
                 var messageChain: net.mamoe.mirai.message.data.MessageChain? = null
@@ -58,34 +59,17 @@ object GuessCS2ProPlayer : KotlinPlugin(
 
                     if (guessedPlayer == null) {
                         messageChain = buildMessageChain {
-                            +PlainText("未找到选手：$message")
+                            //+PlainText("未找到选手：$message")
                         }
                         return@synchronized
                     }
 
-                    val isDuplicateGuess = gameState.guesses.any { guess ->
-                        val normalizedGuessName = guess.second.name.lowercase().replace(Regex("[^a-z0-9]"), "")
-                        val normalizedGuessedName = guessedPlayer.name.lowercase().replace(Regex("[^a-z0-9]"), "")
-                        val guessWithI = normalizedGuessName.replace("1", "i")
-                        val guessWith1 = normalizedGuessName.replace("i", "1")
-                        val guessWithO = guessWithI.replace("0", "o")
-                        val guessWith0 = guessWith1.replace("o", "0")
-                        val guessedWithI = normalizedGuessedName.replace("1", "i")
-                        val guessedWith1 = normalizedGuessedName.replace("i", "1")
-                        val guessedWithO = guessedWithI.replace("0", "o")
-                        val guessedWith0 = guessedWith1.replace("o", "0")
-
-                        normalizedGuessName == normalizedGuessedName ||
-                                guessWithI == guessedWithI ||
-                                guessWith1 == guessedWith1 ||
-                                guessWithO == guessedWithO ||
-                                guessWith0 == guessedWith0
+                    val guessedNameNormalized = guessedPlayer.name.lowercase().replace(Regex("[^a-z0-9]"), "")
+                    val isDuplicateGuess = gameState.guesses.any { (_, guessed) ->
+                        guessedNameNormalized == guessed.name.lowercase().replace(Regex("[^a-z0-9]"), "")
                     }
-
                     if (isDuplicateGuess) {
-                        messageChain = buildMessageChain {
-                            +PlainText("该选手已被猜测过，请尝试其他选手！")
-                        }
+                        duplicateGuessMessage = "该选手已被猜测过，请尝试其他选手！"
                         return@synchronized
                     }
 
@@ -114,6 +98,12 @@ object GuessCS2ProPlayer : KotlinPlugin(
                         }
                     }
                 }
+                // 把 suspend 函数
+                if (duplicateGuessMessage != null) {
+                    group.sendMessage(PlainText(duplicateGuessMessage!!))
+                    return@subscribeAlways
+                }
+
 
                 if (shouldSendMessage) {
                     if (tempFile != null) {
