@@ -33,17 +33,18 @@ https://blast.tv/counter-strikle/multiplayer
 
 - [x] 基本的猜选手小游戏实现
 - [x] 国旗显示支持
-- [x] 170个选手数据
+- [x] 200+个选手数据
 
 --------------------------------------------------
 
 ### 🔑指令
-- /开始猜选手
-- /结束猜选手
+- /猜选手 start
+- /猜选手 stop
 
 _指令需要给予相关权限才可以使用_
-- org.bcz.guesscs2proplayer.command.开始猜选手
-- org.bcz.guesscs2proplayer.command.结束猜选手
+- org.bcz.guesscs2proplayer.command.猜选手.start
+- org.bcz.guesscs2proplayer.command.猜选手.stop
+- org.bcz.guesscs2proplayer.command.*
 
 -----------------------------------------
 ### 📷插件截图
