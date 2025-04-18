@@ -14,7 +14,7 @@ https://blast.tv/counter-strikle/multiplayer
 1. 从Release中下载最新版本
 2. 将Zip文件解压并放入 _%mirai文件根目录%/_ 中
 3. 重新启动你的mirai-console
-4. 在群内输入 _/开始猜选手_ 开始游戏
+4. 在群内输入 _/猜选手 start_ 开始游戏
 #### 🛠️依赖前置（请安装到你搭建机器人的服务器上）
 -  [mirai-skia-plugin](https://github.com/cssxsh/mirai-skia-plugin)
 - [Mirai-console 2.16版本或以上](https://github.com/mamoe/mirai/releases)
