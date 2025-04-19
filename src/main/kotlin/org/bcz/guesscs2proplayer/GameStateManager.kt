@@ -1,6 +1,7 @@
 package org.bcz.guesscs2proplayer.managers
 
 import org.bcz.guesscs2proplayer.GameState
+import org.bcz.guesscs2proplayer.Player
 
 object GameStateManager {
     private val gameStates = mutableMapOf<Long, GameState>()
@@ -15,5 +16,13 @@ object GameStateManager {
 
     fun removeGameState(groupId: Long) {
         gameStates.remove(groupId)
+    }
+
+    fun nextRound(groupId: Long, newTargetPlayer: Player) {
+        val gameState = gameStates[groupId] ?: return
+        gameState.targetPlayer = newTargetPlayer
+        gameState.guessesLeft = 10
+        gameState.guesses.clear()
+        gameState.currentRound++
     }
 }

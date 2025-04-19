@@ -7,14 +7,14 @@ https://blast.tv/counter-strikle/multiplayer
 )](https://mirai.mamoe.net/user/kymandu)
 
 -------------------------
-#### 🌱 插件处于初期开发阶段 只实现了基础功能 | 有任何建议或者想法可以在issue中提出
+#### 🌱 插件处于开发阶段  | 有任何建议或者想法可以在issue中提出
 
 ---------------------------
 ### 🛠️安装&依赖前置
 1. 从Release中下载最新版本
 2. 将Zip文件解压并放入 _%mirai文件根目录%/_ 中
 3. 重新启动你的mirai-console
-4. 在群内输入 _/猜选手 start_ 开始游戏
+4. 在群内输入 _/猜选手 开始_ 开始游戏
 #### 🛠️依赖前置（请安装到你搭建机器人的服务器上）
 -  [mirai-skia-plugin](https://github.com/cssxsh/mirai-skia-plugin)
 - [Mirai-console 2.16版本或以上](https://github.com/mamoe/mirai/releases)
@@ -34,17 +34,25 @@ https://blast.tv/counter-strikle/multiplayer
 - [x] 基本的猜选手小游戏实现
 - [x] 国旗显示支持
 - [x] 200+个选手数据
+- [x] 排行榜
+- [x] 多种模式（bo3，bo5）
 
 --------------------------------------------------
 
 ### 🔑指令
-- /猜选手 start
-- /猜选手 stop
+- /猜选手 开始 （default，bo3，bo5）
+- /猜选手 结束
+- /猜选手 排行榜
+- /猜选手 resetleaderboard
+- /开始猜选手
 
 _指令需要给予相关权限才可以使用_
-- org.bcz.guesscs2proplayer.command.猜选手.start
-- org.bcz.guesscs2proplayer.command.猜选手.stop
-- org.bcz.guesscs2proplayer.command.*
+- org.bcz.guesscs2proplayer.command.猜选手.开始
+- org.bcz.guesscs2proplayer.command.猜选手.结束
+- org.bcz.guesscs2proplayer.command.猜选手.排行榜
+- org.bcz.guesscs2proplayer.command.猜选手.resetleaderboard
+- org.bcz.guesscs2proplayer.command.* （省事但是不建议，可能被恶意删榜）
+- org.bcz.guesscs2proplayer.command.开始猜选手
 
 -----------------------------------------
 ### 📷插件截图

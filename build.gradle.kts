@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "org.bcz.guesscs2proplayer"
-version = "0.0.6"
+version = "0.1.0"
 
 repositories {
     maven("https://maven.aliyun.com/repository/public") // 加速依赖下载
@@ -22,6 +22,7 @@ dependencies {
     compileOnly("net.mamoe:mirai-core:2.16.0")
     compileOnly("net.mamoe:mirai-console:2.16.0")
     implementation("xyz.cssxsh.mirai:mirai-skia-plugin:1.3.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
 }
 
 tasks.withType<Jar> {
