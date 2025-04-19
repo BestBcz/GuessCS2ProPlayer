@@ -34,6 +34,8 @@ object GuessCS2ProPlayer : KotlinPlugin(
 
         // 注册命令
         CommandManager.INSTANCE.registerCommand(GameCommands, true)
+        CommandManager.INSTANCE.registerCommand(GameCommands.StartGameCommand, true)
+        CommandManager.INSTANCE.registerCommand(GameCommands.StopGameCommand, true)
 
         // 监听群消息
         globalEventChannel().subscribeAlways<net.mamoe.mirai.event.events.GroupMessageEvent> { event ->

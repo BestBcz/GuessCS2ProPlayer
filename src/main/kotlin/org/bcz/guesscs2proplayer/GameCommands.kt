@@ -12,10 +12,13 @@ object GameCommands : CompositeCommand(
     GuessCS2ProPlayer,
     primaryName = "猜选手",
     description = "CS2 猜职业哥游戏命令"
-) {
+)
+
+{
     @SubCommand("start")
     @Description("开始 CS2 猜职业哥游戏")
     suspend fun CommandSender.start() {
+        doStart(this)
         val group = this.subject as? Group ?: run {
             sendMessage("此命令只能在群聊中使用")
             return
@@ -36,6 +39,7 @@ object GameCommands : CompositeCommand(
     @SubCommand("stop")
     @Description("结束 CS2 猜职业哥游戏")
     suspend fun CommandSender.stop() {
+        doStop(this)
         val group = this.subject as? Group ?: run {
             sendMessage("此命令只能在群聊中使用")
             return
@@ -49,6 +53,64 @@ object GameCommands : CompositeCommand(
 
         val gameState = GameStateManager.getGameState(groupId)!!
         sendMessage("游戏已结束！正确选手为 ${gameState.targetPlayer.name}")
+        GameStateManager.removeGameState(groupId)
+    }
+
+    object StartGameCommand : CompositeCommand(
+        GuessCS2ProPlayer,
+        primaryName = "开始猜选手",
+        description = "开始 CS2 猜职业哥游戏"
+    ) {
+        @SubCommand("默认")
+        suspend fun CommandSender.execute() {
+            doStart(this)
+        }
+    }
+
+    object StopGameCommand : CompositeCommand(
+        GuessCS2ProPlayer,
+        primaryName = "结束猜选手",
+        description = "结束 CS2 猜职业哥游戏"
+    ) {
+        @SubCommand("默认")
+        suspend fun CommandSender.execute() {
+            doStop(this)
+        }
+    }
+
+
+
+    suspend fun doStart(sender: CommandSender) {
+        val group = sender.subject as? Group ?: run {
+            sender.sendMessage("此命令只能在群聊中使用")
+            return
+        }
+        val groupId = group.id
+
+        if (GameStateManager.hasGameState(groupId)) {
+            sender.sendMessage("群内已有进行中的游戏，请先完成。")
+            return
+        }
+
+        val targetPlayer = PlayerManager.getRandomPlayer()
+        GameStateManager.startGame(groupId, GameState(groupId, targetPlayer))
+        sender.sendMessage("游戏开始！群内成员可以直接发送选手名字进行猜测（例如：s1mple），共有 10 次机会。")
+    }
+
+    suspend fun doStop(sender: CommandSender) {
+        val group = sender.subject as? Group ?: run {
+            sender.sendMessage("此命令只能在群聊中使用")
+            return
+        }
+        val groupId = group.id
+
+        if (!GameStateManager.hasGameState(groupId)) {
+            sender.sendMessage("当前没有进行中的游戏。")
+            return
+        }
+
+        val gameState = GameStateManager.getGameState(groupId)!!
+        sender.sendMessage("游戏已结束！正确选手为 ${gameState.targetPlayer.name}")
         GameStateManager.removeGameState(groupId)
     }
 }

@@ -1,5 +1,6 @@
 package org.bcz.guesscs2proplayer
 
+
 data class Player(
     val name: String,
     val team: String,
@@ -14,5 +15,6 @@ data class GameState(
     val targetPlayer: Player,
     var guessesLeft: Int = 10,
     val guesses: MutableList<Pair<String, Player>> = mutableListOf()
+
 )
 
