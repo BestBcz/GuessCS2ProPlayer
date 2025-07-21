@@ -57,9 +57,7 @@ _指令需要给予相关权限才可以使用_
 -----------------------------------------
 ### 📷插件截图
 
-![image](https://ibb.co/209zhDLZ)
-
-[url=https://ibb.co/209zhDLZ][img]https://i.ibb.co/bj04mSyb/IMG-8307.jpg[/img][/url]
+![image](https://i.ibb.co/bj04mSyb/IMG-8307.jpg)
 
 -------------------------------------
 
