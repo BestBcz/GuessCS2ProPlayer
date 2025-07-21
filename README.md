@@ -59,6 +59,8 @@ _指令需要给予相关权限才可以使用_
 
 ![image](https://ibb.co/209zhDLZ)
 
+[url=https://ibb.co/209zhDLZ][img]https://i.ibb.co/bj04mSyb/IMG-8307.jpg[/img][/url]
+
 -------------------------------------
 
 #### 💡 选手数据整理为csv文件放置在/data/org.bcz.guesscs2proplayer/中
