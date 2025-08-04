@@ -2,6 +2,8 @@ package org.bcz.guesscs2proplayer.managers
 
 import org.bcz.guesscs2proplayer.GuessCS2ProPlayer
 import org.bcz.guesscs2proplayer.Player
+import org.bcz.guesscs2proplayer.NetworkPlayerManager
+import org.bcz.guesscs2proplayer.Config
 import java.io.BufferedReader
 import java.io.File
 import java.io.FileReader
@@ -9,10 +11,28 @@ import kotlin.random.Random
 
 object PlayerManager {
     private var players: List<Player> = emptyList()
+    private var useNetworkMode: Boolean = false
 
-    fun isInitialized(): Boolean = players.isNotEmpty()
+    fun isInitialized(): Boolean = players.isNotEmpty() || useNetworkMode
+
+    fun setNetworkMode(enabled: Boolean) {
+        useNetworkMode = enabled
+        Config.setNetworkModeEnabled(enabled)
+        if (enabled) {
+            GuessCS2ProPlayer.logger.info("Network mode enabled - will fetch player data from HLTV/Liquipedia")
+        } else {
+            GuessCS2ProPlayer.logger.info("Network mode disabled - using local CSV data")
+        }
+    }
+
+    fun isNetworkModeEnabled(): Boolean = useNetworkMode
 
     suspend fun initialize(dataFolder: File) {
+        if (useNetworkMode) {
+            GuessCS2ProPlayer.logger.info("Initializing in network mode")
+            return
+        }
+
         val csvFile = File(dataFolder, "players.csv")
         if (!csvFile.exists()) {
             GuessCS2ProPlayer.logger.error("players.csv not found in ${dataFolder.path}")
@@ -27,14 +47,22 @@ object PlayerManager {
         }
     }
 
-    fun getRandomPlayer(): Player {
+    suspend fun getRandomPlayer(): Player {
+        if (useNetworkMode) {
+            return NetworkPlayerManager.getRandomPlayer()
+        }
+
         if (players.isEmpty()) {
             throw IllegalStateException("Players list is not initialized or empty")
         }
         return players[Random.nextInt(players.size)]
     }
 
-    fun findPlayer(name: String): Player? {
+    suspend fun findPlayer(name: String): Player? {
+        if (useNetworkMode) {
+            return NetworkPlayerManager.searchPlayerByName(name)
+        }
+
         if (players.isEmpty()) {
             throw IllegalStateException("Players list is not initialized")
         }

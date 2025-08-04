@@ -1,75 +1,117 @@
-## 仿Blast.tv猜CS2职业选手的小游戏插件-GuessCS2ProPlayer
-https://blast.tv/counter-strikle/multiplayer
-### [基于miraiQQ机器人](https://github.com/mamoe/mirai)
+# CS2 猜职业哥小游戏
 
-[![Github](https://img.shields.io/badge/-Github-000?style=flat&logo=Github&logoColor=white)](https://github.com/BestBcz/GuessCS2ProPlayer)
-[![MiraiForum](https://img.shields.io/badge/Forum-Mirai?style=flat-square&label=Mirai
-)](https://mirai.mamoe.net/user/kymandu)
+一个基于 Mirai Console 的 CS2 职业选手猜谜游戏插件。
 
--------------------------
-#### 🌱 插件处于开发阶段  | 有任何建议或者想法可以在issue中提出
+## 功能特性
 
----------------------------
-### 🛠️安装&依赖前置
-1. 从Release中下载最新版本
-2. 将Zip文件解压并放入 _%mirai文件根目录%/_ 中
-3. 重新启动你的mirai-console
-4. 在群内输入 _/猜选手 开始_ 开始游戏
-#### 🛠️依赖前置（请安装到你搭建机器人的服务器上）
--  [mirai-skia-plugin](https://github.com/cssxsh/mirai-skia-plugin)
-- [Mirai-console 2.16版本或以上](https://github.com/mamoe/mirai/releases)
-- [Chat-Command](https://github.com/project-mirai/chat-command)
+### 🎮 游戏功能
+- **多种游戏模式**：单局、BO3、BO5
+- **实时排行榜**：记录每周胜场统计
+- **智能匹配**：支持选手名称的模糊匹配
+- **可视化结果**：生成美观的猜测结果表格
 
+### 🌐 网络模式（新功能）
+- **实时数据获取**：从 HLTV 和液体百科获取最新选手信息
+- **本地数据备份**：网络不可用时自动使用本地数据
+- **智能缓存**：减少重复网络请求
+- **配置化管理**：可随时切换网络/本地模式
 
-----------------------------------------
+## 安装说明
 
-### 🚀代办清单 （可以订阅Release来获取更新)
+1. 确保已安装 Mirai Console
+2. 安装 mirai-skia-plugin 依赖
+3. 将插件放入 plugins 文件夹
+4. 重启 Mirai Console
 
-- [ ] 制作完整版
+## 使用命令
 
--------------------------------------------------
+### 基础命令
+- `/猜选手 开始 [模式]` - 开始游戏（模式：Default/bo3/bo5）
+- `/猜选手 结束` - 结束当前游戏
+- `/猜选手 排行榜` - 查看本周胜场排行榜
+- `/开始猜选手` - 快速开始单局游戏
 
-### 🧐已拥有的功能
+### 网络模式命令
+- `/猜选手 网络模式 on/off` - 开启/关闭网络模式
+- `/猜选手 状态` - 查看当前游戏状态和网络模式
+- `/猜选手 配置` - 查看详细配置信息
 
-- [x] 基本的猜选手小游戏实现
-- [x] 国旗显示支持
-- [x] 200+个选手数据
-- [x] 排行榜
-- [x] 多种模式（bo3，bo5）
+## 网络模式说明
 
---------------------------------------------------
+### 开启网络模式
+```
+/猜选手 网络模式 on
+```
 
-### 🔑指令
-- /猜选手 开始 （default，bo3，bo5）
-- /猜选手 结束
-- /猜选手 排行榜
-- /猜选手 resetleaderboard
-- /开始猜选手
+开启后，插件将：
+- 实时从 HLTV 获取选手信息
+- 自动更新选手队伍、年龄等数据
+- 支持搜索任意选手名称
+- 网络失败时自动回退到本地数据
 
-_指令需要给予相关权限才可以使用_
-- org.bcz.guesscs2proplayer.command.猜选手.开始
-- org.bcz.guesscs2proplayer.command.猜选手.结束
-- org.bcz.guesscs2proplayer.command.猜选手.排行榜
-- org.bcz.guesscs2proplayer.command.猜选手.resetleaderboard
-- org.bcz.guesscs2proplayer.command.* （省事但是不建议，可能被恶意删榜）
-- org.bcz.guesscs2proplayer.command.开始猜选手
+### 关闭网络模式
+```
+/猜选手 网络模式 off
+```
 
------------------------------------------
-### 📷插件截图
+关闭后，插件将：
+- 使用本地 CSV 数据
+- 响应更快，不依赖网络
+- 数据相对固定
 
-施工中
+## 配置说明
 
--------------------------------------
+### 网络模式配置
+- `network.mode.enabled` - 是否启用网络模式
+- `hltv.api.enabled` - 是否启用 HLTV API
+- `liquipedia.api.enabled` - 是否启用液体百科 API
+- `request.timeout` - 网络请求超时时间（毫秒）
+- `max.retries` - 最大重试次数
 
-#### 💡 选手数据整理为csv文件放置在/data/org.bcz.guesscs2proplayer/中
-#### 💡 目前使用的爬取方法为我自己的python项目，效果一般
-#### 💡如有较为完美的思路或者程序可以在issue中告诉我
+### 配置文件位置
+配置文件保存在插件数据文件夹的 `config.properties` 中。
 
-- 💡[prodown](https://github.com/BestBcz/prodown)
--------------------------------------------
-### 编译  - 非开发者请无视
-- 如果需要使用pluginbuild 编译请使用
-- ```javascript
-  ./gradlew clean buildPlugin -x miraiPrepareMetadata
-  
-- 来防止miraiPrepareMetadata造成的报错(理论上普通build也可行)
+## 游戏玩法
+
+1. 使用命令开始游戏
+2. 群内成员直接发送选手名字进行猜测
+3. 系统会显示猜测结果和剩余次数
+4. 猜对或次数用完时游戏结束
+
+## 支持的选手
+
+插件支持大量 CS2 职业选手，包括但不限于：
+- s1mple, ZywOo, NiKo, dev1ce
+- coldzera, f0rest, GeT_RiGhT
+- kennyS, olofmeister, GuardiaN
+- 以及更多知名选手...
+
+## 技术特性
+
+- **异步处理**：使用 Kotlin 协程处理网络请求
+- **错误处理**：完善的异常处理和回退机制
+- **性能优化**：智能缓存和请求限流
+- **可扩展性**：模块化设计，易于添加新功能
+
+## 更新日志
+
+### v0.2.0
+- ✨ 新增网络模式功能
+- ✨ 支持实时获取 HLTV 数据
+- ✨ 添加配置管理功能
+- ✨ 改进错误处理和用户体验
+- 🐛 修复多个已知问题
+
+### v0.1.0
+- 🎉 初始版本发布
+- 🎮 基础游戏功能
+- 📊 排行榜系统
+- 🎨 可视化结果展示
+
+## 贡献
+
+欢迎提交 Issue 和 Pull Request！
+
+## 许可证
+
+MIT License

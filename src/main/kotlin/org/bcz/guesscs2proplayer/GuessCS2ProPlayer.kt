@@ -29,6 +29,9 @@ object GuessCS2ProPlayer : KotlinPlugin(
     override fun onEnable() {
         logger.info("Starting to load CS2 Guess Pro Player plugin...")
 
+        // 初始化配置
+        Config.initialize(dataFolder)
+        
         // 初始化玩家管理器
         runBlocking {
             //logger.info("Initializing PlayerManager with data folder: ${dataFolder.absolutePath}")
@@ -101,7 +104,7 @@ object GuessCS2ProPlayer : KotlinPlugin(
                     }
 
                     val gameState = GameStateManager.getGameState(groupId)!!
-                    val guessedPlayer = PlayerManager.findPlayer(message)
+                    val guessedPlayer = runBlocking { PlayerManager.findPlayer(message) }
 
                     if (guessedPlayer == null) {
                         logger.info("Player not found for guess: $message in group $groupId")
@@ -153,8 +156,8 @@ object GuessCS2ProPlayer : KotlinPlugin(
                                 GameStateManager.removeGameState(groupId)
                             } else {
                                 // 下一局
-                                val newTargetPlayer = PlayerManager.getRandomPlayer()
-                                GameStateManager.nextRound(groupId, newTargetPlayer)
+                                val newTargetPlayer = runBlocking { PlayerManager.getRandomPlayer() }
+                                runBlocking { GameStateManager.nextRound(groupId, newTargetPlayer) }
                                 +PlainText("\n下一局开始！剩余 ${maxRounds - gameState.currentRound} 局。")
                             }
                         } else if (gameState.guessesLeft == 0) {
@@ -174,8 +177,8 @@ object GuessCS2ProPlayer : KotlinPlugin(
                                 GameStateManager.removeGameState(groupId)
                             } else {
                                 // 下一局
-                                val newTargetPlayer = PlayerManager.getRandomPlayer()
-                                GameStateManager.nextRound(groupId, newTargetPlayer)
+                                val newTargetPlayer = runBlocking { PlayerManager.getRandomPlayer() }
+                                runBlocking { GameStateManager.nextRound(groupId, newTargetPlayer) }
                                 +PlainText("\n下一局开始！剩余 ${maxRounds - gameState.currentRound} 局。")
                             }
                         } else {

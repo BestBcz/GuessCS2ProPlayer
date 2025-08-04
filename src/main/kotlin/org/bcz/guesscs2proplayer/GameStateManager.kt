@@ -18,7 +18,7 @@ object GameStateManager {
         gameStates.remove(groupId)
     }
 
-    fun nextRound(groupId: Long, newTargetPlayer: Player) {
+    suspend fun nextRound(groupId: Long, newTargetPlayer: Player) {
         val gameState = gameStates[groupId] ?: return
         gameState.targetPlayer = newTargetPlayer
         gameState.guessesLeft = 10
