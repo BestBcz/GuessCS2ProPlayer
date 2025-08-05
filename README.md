@@ -59,6 +59,7 @@
 ## 数据管理
 
 插件使用本地 CSV 文件存储选手数据，位于 `data/players.csv`。
+选手数据使用本人项目https://github.com/BestBcz/prodown
 
 ### 插件截图
 
