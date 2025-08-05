@@ -26,6 +26,13 @@
 - `/猜选手 结束` - 结束当前游戏
 - `/猜选手 排行榜` - 查看本周胜场排行榜
 - `/猜选手 resetleaderboard` - 重置排行榜（管理员专用）
+  _指令需要给予相关权限才可以使用_
+- org.bcz.guesscs2proplayer.command.猜选手.开始
+- org.bcz.guesscs2proplayer.command.猜选手.结束
+- org.bcz.guesscs2proplayer.command.猜选手.排行榜
+- org.bcz.guesscs2proplayer.command.猜选手.resetleaderboard
+- org.bcz.guesscs2proplayer.command.* （省事但是不建议，可能被恶意删榜）
+- org.bcz.guesscs2proplayer.command.开始猜选手
 
 ### 游戏规则
 
