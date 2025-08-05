@@ -50,7 +50,11 @@
 
 插件使用本地 CSV 文件存储选手数据，位于 `data/players.csv`。
 
-### CSV 文件格式
+### 插件截图
+
+
+
+![png](https://i.ibb.co/DD21bTFy/9fa4d7fde22239168f8a1c4d753a2655.png)
 
 
 
