@@ -1,6 +1,5 @@
 package org.bcz.guesscs2proplayer
 
-import kotlinx.coroutines.runBlocking
 import net.mamoe.mirai.console.command.CommandManager
 import net.mamoe.mirai.console.plugin.jvm.JvmPluginDescription
 import net.mamoe.mirai.console.plugin.jvm.KotlinPlugin
@@ -10,8 +9,8 @@ import net.mamoe.mirai.message.data.buildMessageChain
 import net.mamoe.mirai.utils.ExternalResource.Companion.toExternalResource
 import org.bcz.guesscs2proplayer.commands.GameCommands
 import org.bcz.guesscs2proplayer.commands.StartGameSimpleCommand
-import org.bcz.guesscs2proplayer.managers.GameStateManager
-import org.bcz.guesscs2proplayer.managers.PlayerManager
+import org.bcz.guesscs2proplayer.GameStateManager
+import org.bcz.guesscs2proplayer.PlayerManager
 import java.time.*
 import java.util.concurrent.TimeUnit
 import kotlin.concurrent.fixedRateTimer
@@ -20,7 +19,7 @@ object GuessCS2ProPlayer : KotlinPlugin(
     JvmPluginDescription(
         id = "org.bcz.guesscs2proplayer",
         name = "CS2猜职业哥小游戏",
-        version = "0.1.0"
+        version = "0.2.0"
     ) {
         author("Bcz")
         dependsOn("xyz.cssxsh.mirai.plugin.mirai-skia-plugin", ">= 1.1.0", false)
@@ -29,14 +28,8 @@ object GuessCS2ProPlayer : KotlinPlugin(
     override fun onEnable() {
         logger.info("Starting to load CS2 Guess Pro Player plugin...")
 
-        // 初始化配置
-        Config.initialize(dataFolder)
-        
         // 初始化玩家管理器
-        runBlocking {
-            //logger.info("Initializing PlayerManager with data folder: ${dataFolder.absolutePath}")
-            PlayerManager.initialize(dataFolder)
-        }
+        PlayerManager.initialize(dataFolder)
         if (!PlayerManager.isInitialized()) {
             logger.error("Failed to initialize PlayerManager, plugin will not function.")
             return
@@ -44,25 +37,20 @@ object GuessCS2ProPlayer : KotlinPlugin(
         logger.info("PlayerManager initialized successfully.")
 
         // 初始化排行榜
-        runBlocking {
-            logger.info("Initializing LeaderboardManager...")
-            LeaderboardManager.initialize(dataFolder)
-            logger.info("LeaderboardManager initialized successfully.")
-        }
+        LeaderboardManager.initialize(dataFolder)
+        logger.info("LeaderboardManager initialized successfully.")
 
         // 注册命令
-        //logger.info("Registering GameCommands...")
         val registeredGameCommands = CommandManager.INSTANCE.registerCommand(GameCommands, true)
         if (registeredGameCommands) {
-            //logger.info("GameCommands registered successfully.")
+            logger.info("GameCommands registered successfully.")
         } else {
             logger.error("Failed to register GameCommands.")
         }
 
-        //logger.info("Registering StartGameSimpleCommand...")
         val registeredStartGameCommand = CommandManager.INSTANCE.registerCommand(StartGameSimpleCommand, true)
         if (registeredStartGameCommand) {
-            //logger.info("StartGameSimpleCommand registered successfully.")
+            logger.info("StartGameSimpleCommand registered successfully.")
         } else {
             logger.error("Failed to register StartGameSimpleCommand.")
         }
@@ -75,11 +63,9 @@ object GuessCS2ProPlayer : KotlinPlugin(
         val initialDelay = Duration.between(LocalDateTime.now(zoneId), nextMondayMidnight)
             .toMillis()
         fixedRateTimer("ResetLeaderboard", false, initialDelay, TimeUnit.DAYS.toMillis(7)) {
-            runBlocking {
-                logger.info("Resetting weekly leaderboard...")
-                LeaderboardManager.resetWeeklyStats()
-                logger.info("Weekly leaderboard reset successfully.")
-            }
+            logger.info("Resetting weekly leaderboard...")
+            LeaderboardManager.resetWeeklyStats()
+            logger.info("Weekly leaderboard reset successfully.")
         }
 
         // 监听群消息
@@ -99,18 +85,16 @@ object GuessCS2ProPlayer : KotlinPlugin(
                 synchronized(groupId) {
                     if (!GameStateManager.hasGameState(groupId)) {
                         shouldSendMessage = false
-                        //logger.info("Game has already ended for group $groupId, ignoring guess: $message")
                         return@subscribeAlways
                     }
 
                     val gameState = GameStateManager.getGameState(groupId)!!
-                    val guessedPlayer = runBlocking { PlayerManager.findPlayer(message) }
+                    val guessedPlayer = PlayerManager.findPlayer(message)
 
                     if (guessedPlayer == null) {
                         logger.info("Player not found for guess: $message in group $groupId")
                         return@synchronized
                     }
-
 
                     val guessedNameNormalized = guessedPlayer.name.lowercase().replace(Regex("[^a-z0-9]"), "")
                     val isDuplicateGuess = gameState.guesses.any { (_, guessed) ->
@@ -118,7 +102,6 @@ object GuessCS2ProPlayer : KotlinPlugin(
                     }
                     if (isDuplicateGuess) {
                         duplicateGuessMessage = "该选手已被猜测过，请尝试其他选手！"
-                        //logger.info("Duplicate guess detected for ${guessedPlayer.name} in group $groupId")
                         return@synchronized
                     }
 
@@ -128,7 +111,6 @@ object GuessCS2ProPlayer : KotlinPlugin(
                     tempFile = try {
                         drawGuessTable(gameState)
                     } catch (e: Exception) {
-                        //logger.error("Failed to draw table for group $groupId: ${e.message}", e)
                         messageChain = buildMessageChain {
                             +PlainText("生成表格失败，请稍后重试。")
                         }
@@ -156,8 +138,8 @@ object GuessCS2ProPlayer : KotlinPlugin(
                                 GameStateManager.removeGameState(groupId)
                             } else {
                                 // 下一局
-                                val newTargetPlayer = runBlocking { PlayerManager.getRandomPlayer() }
-                                runBlocking { GameStateManager.nextRound(groupId, newTargetPlayer) }
+                                val newTargetPlayer = PlayerManager.getRandomPlayer()
+                                GameStateManager.nextRound(groupId, newTargetPlayer)
                                 +PlainText("\n下一局开始！剩余 ${maxRounds - gameState.currentRound} 局。")
                             }
                         } else if (gameState.guessesLeft == 0) {
@@ -177,8 +159,8 @@ object GuessCS2ProPlayer : KotlinPlugin(
                                 GameStateManager.removeGameState(groupId)
                             } else {
                                 // 下一局
-                                val newTargetPlayer = runBlocking { PlayerManager.getRandomPlayer() }
-                                runBlocking { GameStateManager.nextRound(groupId, newTargetPlayer) }
+                                val newTargetPlayer = PlayerManager.getRandomPlayer()
+                                GameStateManager.nextRound(groupId, newTargetPlayer)
                                 +PlainText("\n下一局开始！剩余 ${maxRounds - gameState.currentRound} 局。")
                             }
                         } else {
@@ -190,9 +172,7 @@ object GuessCS2ProPlayer : KotlinPlugin(
                 // 处理重复猜测消息
                 if (duplicateGuessMessage != null) {
                     try {
-                        //logger.info("Preparing to send duplicate guess message for group $groupId: $duplicateGuessMessage")
                         group.sendMessage(PlainText(duplicateGuessMessage!!))
-                        //logger.info("Successfully sent duplicate guess message for group $groupId")
                     } catch (e: Exception) {
                         logger.error("Failed to send duplicate guess message for group $groupId: ${e.message}", e)
                     }
@@ -222,9 +202,7 @@ object GuessCS2ProPlayer : KotlinPlugin(
                             }
                         }
 
-                        //logger.info("Preparing to send message for group $groupId: ${messageChain!!.contentToString()}")
                         group.sendMessage(messageChain!!)
-                        //logger.info("Successfully sent message for group $groupId: ${messageChain!!.contentToString()}")
                     } catch (e: Exception) {
                         logger.error("Failed to send message for group $groupId: ${e.message}", e)
                         try {

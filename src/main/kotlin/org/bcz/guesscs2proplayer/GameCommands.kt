@@ -7,10 +7,9 @@ import net.mamoe.mirai.contact.Group
 import org.bcz.guesscs2proplayer.GameMode
 import org.bcz.guesscs2proplayer.GameState
 import org.bcz.guesscs2proplayer.GuessCS2ProPlayer
-import org.bcz.guesscs2proplayer.managers.GameStateManager
-import org.bcz.guesscs2proplayer.managers.PlayerManager
+import org.bcz.guesscs2proplayer.GameStateManager
+import org.bcz.guesscs2proplayer.PlayerManager
 import org.bcz.guesscs2proplayer.LeaderboardManager
-import org.bcz.guesscs2proplayer.Config
 
 object GameCommands : CompositeCommand(
     GuessCS2ProPlayer,
@@ -51,66 +50,6 @@ object GameCommands : CompositeCommand(
         LeaderboardManager.resetWeeklyStats()
         sendMessage("排行榜已重置！")
     }
-
-    @SubCommand("网络模式")
-    @Description("切换网络模式：on/off - 开启/关闭实时获取选手信息")
-    suspend fun CommandSender.networkMode(enabled: String) {
-        val group = this.subject as? Group ?: run {
-            sendMessage("此命令只能在群聊中使用")
-            return
-        }
-        
-        val isEnabled = when (enabled.lowercase()) {
-            "on", "true", "1", "开启" -> true
-            "off", "false", "0", "关闭" -> false
-            else -> {
-                sendMessage("参数错误！请使用：on/off 或 开启/关闭")
-                return
-            }
-        }
-        
-        PlayerManager.setNetworkMode(isEnabled)
-        val status = if (isEnabled) "开启" else "关闭"
-        sendMessage("网络模式已$status！${if (isEnabled) "将实时从HLTV/液体百科获取选手信息" else "将使用本地CSV数据"}")
-    }
-
-    @SubCommand("状态")
-    @Description("查看当前游戏状态和网络模式")
-    suspend fun CommandSender.status() {
-        val group = this.subject as? Group ?: run {
-            sendMessage("此命令只能在群聊中使用")
-            return
-        }
-        
-        val groupId = group.id
-        val hasGame = GameStateManager.hasGameState(groupId)
-        val networkMode = PlayerManager.isNetworkModeEnabled()
-        
-        val statusMessage = buildString {
-            appendLine("📊 游戏状态：")
-            appendLine("• 网络模式：${if (networkMode) "✅ 开启" else "❌ 关闭"}")
-            appendLine("• 当前游戏：${if (hasGame) "✅ 进行中" else "❌ 无"}")
-            
-            if (hasGame) {
-                val gameState = GameStateManager.getGameState(groupId)!!
-                appendLine("• 剩余次数：${gameState.guessesLeft}")
-                appendLine("• 游戏模式：${gameState.gameMode.name}")
-            }
-        }
-        
-        sendMessage(statusMessage)
-    }
-
-    @SubCommand("配置")
-    @Description("查看当前配置信息")
-    suspend fun CommandSender.config() {
-        val group = this.subject as? Group ?: run {
-            sendMessage("此命令只能在群聊中使用")
-            return
-        }
-        
-        sendMessage(Config.getConfigSummary())
-    }
 }
 
 object StartGameSimpleCommand : SimpleCommand(
@@ -143,14 +82,10 @@ suspend fun doStart(sender: CommandSender, mode: String? = "Default") {
     }
 
     try {
-        sender.sendMessage("正在获取选手信息...")
         val targetPlayer = PlayerManager.getRandomPlayer()
         GameStateManager.startGame(groupId, GameState(groupId, targetPlayer, gameMode = gameMode))
         
-        val networkMode = PlayerManager.isNetworkModeEnabled()
-        val modeInfo = if (networkMode) "（实时数据模式）" else "（本地数据模式）"
-        
-        sender.sendMessage("游戏开始${modeInfo}（模式：${gameMode.name}）！群内成员可以直接发送选手名字进行猜测（例如：s1mple），每局共有 10 次机会。")
+        sender.sendMessage("游戏开始（模式：${gameMode.name}）！群内成员可以直接发送选手名字进行猜测（例如：s1mple），每局共有 10 次机会。")
     } catch (e: Exception) {
         GuessCS2ProPlayer.logger.error("Failed to start game", e)
         sender.sendMessage("游戏启动失败：${e.message}")

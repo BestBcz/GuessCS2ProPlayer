@@ -19,7 +19,7 @@ object LeaderboardManager {
         val losses: Map<String, Int>
     )
 
-    suspend fun initialize(folder: File) {
+    fun initialize(folder: File) {
         dataFolder = folder
         val leaderboardFile = File(dataFolder, "leaderboard.json")
         if (leaderboardFile.exists()) {

@@ -6,8 +6,7 @@ data class Player(
     val team: String,
     val nationality: String,
     val age: Int,
-    val position: String,
-    val majorAppearances: Int // 新增 Major 出场次数
+    val position: String
 )
 
 data class GameState(

@@ -1,4 +1,4 @@
-package org.bcz.guesscs2proplayer.managers
+package org.bcz.guesscs2proplayer
 
 import org.bcz.guesscs2proplayer.GameState
 import org.bcz.guesscs2proplayer.Player
@@ -18,7 +18,7 @@ object GameStateManager {
         gameStates.remove(groupId)
     }
 
-    suspend fun nextRound(groupId: Long, newTargetPlayer: Player) {
+    fun nextRound(groupId: Long, newTargetPlayer: Player) {
         val gameState = gameStates[groupId] ?: return
         gameState.targetPlayer = newTargetPlayer
         gameState.guessesLeft = 10
