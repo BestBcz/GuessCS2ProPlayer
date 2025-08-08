@@ -40,7 +40,7 @@ object CountryUtils {
         "Bosnia and Herzegovina" to "ba", "Denmark" to "dk", "Slovakia" to "sk", "Poland" to "pl", "Belgium" to "be",
         "Netherlands" to "nl", "Germany" to "de", "France" to "fr", "Sweden" to "se", "Norway" to "no",
         "Finland" to "fi", "United Kingdom" to "gb", "Spain" to "es", "Italy" to "it", "Portugal" to "pt",
-        "Austria" to "at", "Switzerland" to "ch", "Czech Republic" to "cz", "Hungary" to "hu", "Romania" to "ro",
+        "Austria" to "at", "Switzerland" to "ch", "Czech Republic" to "cz", "Czechia" to "cz", "Hungary" to "hu", "Romania" to "ro",
         "Bulgaria" to "bg", "Serbia" to "rs", "Croatia" to "hr", "Slovenia" to "si", "North Macedonia" to "mk",
         "Albania" to "al", "Montenegro" to "me", "Estonia" to "ee", "Latvia" to "lv", "Lithuania" to "lt",
         "Ireland" to "ie", "Iceland" to "is", "Greece" to "gr", "Cyprus" to "cy",
