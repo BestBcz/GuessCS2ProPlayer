@@ -1,6 +1,7 @@
 # CS2 猜职业哥小游戏
 
 一个基于 Mirai Console 的 CS2 职业选手猜猜猜游戏插件。
+(插件处于开发阶段，当前为测试版发行)
 
 ## 功能特性
 
@@ -63,9 +64,10 @@
 
 ### 插件截图
 
+插件测试阶段 不代表最终品质
 
+<img width="600" height="556" alt="c1fe41d3cf88f025d2ad00abec57cd43" src="https://github.com/user-attachments/assets/3e8efbe6-142e-431d-a36b-a0c0587d4f99" />
 
-![png](https://i.ibb.co/DD21bTFy/9fa4d7fde22239168f8a1c4d753a2655.png)
 
 
 
