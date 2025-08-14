@@ -19,7 +19,7 @@ object GuessCS2ProPlayer : KotlinPlugin(
     JvmPluginDescription(
         id = "org.bcz.guesscs2proplayer",
         name = "CS2猜职业哥小游戏",
-        version = "0.2.1"
+        version = "0.2.2"
     ) {
         author("Bcz")
         dependsOn("xyz.cssxsh.mirai.plugin.mirai-skia-plugin", ">= 1.1.0", false)
