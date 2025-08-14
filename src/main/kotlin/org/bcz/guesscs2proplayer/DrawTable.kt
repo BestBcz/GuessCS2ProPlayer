@@ -59,8 +59,9 @@ fun drawGuessTable(gameState: GameState): File {
     }
 
     val headers = listOf("选手姓名", "队伍", "国籍", "年龄", "位置")
-    val columnWidths = listOf(140f, 160f, 100f, 80f, 120f)
-    val tableWidth = columnWidths.sum() + 20f // 增加间距
+    val columnWidths = listOf(120f, 200f, 80f, 70f, 100f)
+    val columnSpacing = 4f // 列间距
+    val tableWidth = columnWidths.sum() + (columnWidths.size - 1) * columnSpacing + 20f // 正确计算总宽度
     val cornerRadius = 8f
     val shadowOffset = 3f
 
@@ -318,7 +319,7 @@ fun drawGuessTable(gameState: GameState): File {
                 canvas.drawTextLine(textLine, textX, textY, contentTextPaint)
             }
 
-            x += columnWidths[fieldIndex] + 4f
+            x += columnWidths[fieldIndex] + columnSpacing
         }
     }
 
