@@ -7,12 +7,12 @@ import kotlin.random.Random
 import org.jetbrains.skia.svg.SVGDOM
 
 fun drawGuessTable(gameState: GameState): File {
-    val width = 800
+    val width = 600 // 减小画布宽度，优化文件大小
     val maxRows = 11 // 固定 11 行表格（1 行表头 + 10 行猜测）
-    val rowHeight = 50f
-    val rowSpacing = 8f
+    val rowHeight = 40f // 减小行高
+    val rowSpacing = 6f // 减小行间距
     val tableHeight = rowHeight + rowSpacing + (maxRows - 1) * (rowHeight + rowSpacing)
-    val height = (tableHeight + 60f).toInt()
+    val height = (tableHeight + 50f).toInt() // 减小顶部边距
 
     val surface = Surface.makeRasterN32Premul(width, height)
     val canvas = surface.canvas
@@ -46,8 +46,8 @@ fun drawGuessTable(gameState: GameState): File {
         Typeface.makeDefault()
     }
     
-    val headerFont = Font(typeface, 18f)
-    val contentFont = Font(typeface, 16f)
+    val headerFont = Font(typeface, 16f) // 减小表头字体
+    val contentFont = Font(typeface, 14f) // 减小内容字体
     
     // 现代文字颜色
     val headerTextPaint = Paint().apply { 
@@ -60,31 +60,22 @@ fun drawGuessTable(gameState: GameState): File {
     }
 
     val headers = listOf("选手姓名", "队伍", "国籍", "年龄", "位置")
-    val columnWidths = listOf(120f, 200f, 80f, 70f, 100f)
-    val columnSpacing = 4f // 列间距
-    val tableWidth = columnWidths.sum() + (columnWidths.size - 1) * columnSpacing + 20f // 正确计算总宽度
-    val cornerRadius = 16f
+    val columnWidths = listOf(90f, 150f, 60f, 50f, 80f) // 减小列宽
+    val columnSpacing = 3f // 减小列间距
+    val tableWidth = columnWidths.sum() + (columnWidths.size - 1) * columnSpacing + 16f // 减小边距
+    val cornerRadius = 12f // 减小圆角，适应新尺寸
 
     val tableX = (width - tableWidth) / 2
     val tableY = (height - tableHeight) / 2
 
-    // 绘制多层阴影效果
-    val shadowColors = listOf(
-        Color.makeARGB(80, 0, 0, 0),
-        Color.makeARGB(40, 0, 0, 0),
-        Color.makeARGB(20, 0, 0, 0)
-    )
-    val shadowOffsets = listOf(8f, 4f, 2f)
-    
-    shadowOffsets.forEachIndexed { index, offset ->
-        val shadowRect = Rect.makeXYWH(tableX + offset, tableY + offset, tableWidth, tableHeight)
-        val shadowRRect = shadowRect.toRRect(cornerRadius)
-        val shadowPaint = Paint().apply {
-            color = shadowColors[index]
-            isAntiAlias = true
-        }
-        canvas.drawRRect(shadowRRect, shadowPaint)
+    // 绘制简化阴影效果
+    val shadowRect = Rect.makeXYWH(tableX + 4f, tableY + 4f, tableWidth, tableHeight)
+    val shadowRRect = shadowRect.toRRect(cornerRadius)
+    val shadowPaint = Paint().apply {
+        color = Color.makeARGB(60, 0, 0, 0)
+        isAntiAlias = true
     }
+    canvas.drawRRect(shadowRRect, shadowPaint)
 
     // 主表格背景 - 毛玻璃效果
     val tableRect = Rect.makeXYWH(tableX, tableY, tableWidth, tableHeight)
@@ -167,7 +158,7 @@ fun drawGuessTable(gameState: GameState): File {
 
         fields.forEachIndexed { fieldIndex, field ->
             val cellRect = Rect.makeXYWH(x, y, columnWidths[fieldIndex], rowHeight)
-            val cellRRect = cellRect.toRRect(8f) // 增加圆角
+            val cellRRect = cellRect.toRRect(6f) // 减小圆角，适应新尺寸
             
             // 根据匹配情况设置单元格颜色
             val cellPaint = Paint().apply {
@@ -325,8 +316,8 @@ fun drawGuessTable(gameState: GameState): File {
             if (fieldIndex == 2) { // 国籍 - 显示国旗
                 try {
                     val svg = CountryUtils.loadSVGFromFile(GuessCS2ProPlayer.dataFolder, player.nationality)
-                    val flagImage = svg.makeImage(28f, 28f)
-                    val flagRect = Rect.makeXYWH(x + (columnWidths[fieldIndex] - 28f) / 2, y + (rowHeight - 28f) / 2, 28f, 28f).toRRect(4f)
+                    val flagImage = svg.makeImage(24f, 24f) // 减小国旗尺寸
+                    val flagRect = Rect.makeXYWH(x + (columnWidths[fieldIndex] - 24f) / 2, y + (rowHeight - 24f) / 2, 24f, 24f).toRRect(3f)
                     canvas.drawImageRRect(flagImage, flagRect)
                     GuessCS2ProPlayer.logger.info("Successfully rendered flag for nationality: ${player.nationality}")
                 } catch (e: Exception) {
@@ -362,11 +353,11 @@ fun drawGuessTable(gameState: GameState): File {
     }
 
     // 添加标题 - 现代设计
-    val titleFont = Font(typeface, 28f) // 增大标题字体
+    val titleFont = Font(typeface, 22f) // 减小标题字体
     val titleText = "CS2 猜职业选手"
     val titleLine = TextLine.make(titleText, titleFont)
     val titleX = (width - titleLine.width) / 2
-    val titleY = 30f
+    val titleY = 25f
     
     // 绘制标题阴影
     val titleShadowPaint = Paint().apply {
