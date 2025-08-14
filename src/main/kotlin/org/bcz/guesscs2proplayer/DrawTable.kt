@@ -9,7 +9,7 @@ import org.jetbrains.skia.svg.SVGDOM
 fun drawGuessTable(gameState: GameState): File {
     val width = 800
     val maxRows = 11 // 固定 11 行表格（1 行表头 + 10 行猜测）
-    val rowHeight = 40f
+    val rowHeight = 50f
     val rowSpacing = 8f
     val tableHeight = rowHeight + rowSpacing + (maxRows - 1) * (rowHeight + rowSpacing)
     val height = (tableHeight + 60f).toInt()
@@ -31,9 +31,22 @@ fun drawGuessTable(gameState: GameState): File {
     }
     canvas.drawRect(Rect.makeXYWH(0f, 0f, width.toFloat(), height.toFloat()), backgroundPaint)
 
-    val typeface = Typeface.makeDefault()
-    val headerFont = Font(typeface, 14f)
-    val contentFont = Font(typeface, 13f)
+    // 尝试加载自定义字体，如果失败则使用默认字体
+    val typeface = try {
+        val fontFile = File(GuessCS2ProPlayer.dataFolder, "TheNeue-Black.ttf")
+        if (fontFile.exists()) {
+            Typeface.makeFromFile(fontFile.absolutePath)
+        } else {
+            GuessCS2ProPlayer.logger.warning("Custom font file not found: ${fontFile.absolutePath}, using default font")
+            Typeface.makeDefault()
+        }
+    } catch (e: Exception) {
+        GuessCS2ProPlayer.logger.error("Failed to load custom font, using default font: ${e.message}", e)
+        Typeface.makeDefault()
+    }
+    
+    val headerFont = Font(typeface, 18f)
+    val contentFont = Font(typeface, 16f)
     
     // Windows 10 风格的文字颜色
     val headerTextPaint = Paint().apply { 
@@ -310,7 +323,7 @@ fun drawGuessTable(gameState: GameState): File {
     }
 
     // 添加标题
-    val titleFont = Font(typeface, 18f)
+    val titleFont = Font(typeface, 24f)
     val titlePaint = Paint().apply {
         color = Color.makeRGB(0, 120, 215) // Windows 10 蓝色
         isAntiAlias = true
