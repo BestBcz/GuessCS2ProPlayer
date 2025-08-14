@@ -17,13 +17,14 @@ fun drawGuessTable(gameState: GameState): File {
     val surface = Surface.makeRasterN32Premul(width, height)
     val canvas = surface.canvas
 
-    // Windows 10 风格的背景渐变
+    // 现代渐变背景
     val backgroundPaint = Paint().apply {
         shader = Shader.makeLinearGradient(
             0f, 0f, 0f, height.toFloat(),
             intArrayOf(
-                Color.makeRGB(240, 240, 240), // 浅灰色顶部
-                Color.makeRGB(230, 230, 230)  // 稍深的灰色底部
+                Color.makeRGB(248, 250, 252), // 超浅蓝灰色顶部
+                Color.makeRGB(241, 245, 249), // 浅蓝灰色中部
+                Color.makeRGB(226, 232, 240)  // 稍深的蓝灰色底部
             ),
             null,
             GradientStyle(tileMode = FilterTileMode.CLAMP, isPremul = true, localMatrix = null)
@@ -48,13 +49,13 @@ fun drawGuessTable(gameState: GameState): File {
     val headerFont = Font(typeface, 18f)
     val contentFont = Font(typeface, 16f)
     
-    // Windows 10 风格的文字颜色
+    // 现代文字颜色
     val headerTextPaint = Paint().apply { 
-        color = Color.makeRGB(64, 64, 64) // 深灰色
+        color = Color.WHITE // 白色，在渐变背景上更清晰
         isAntiAlias = true
     }
     val contentTextPaint = Paint().apply { 
-        color = Color.makeRGB(32, 32, 32) // 更深的灰色
+        color = Color.makeRGB(51, 65, 85) // 现代深蓝灰色
         isAntiAlias = true
     }
 
@@ -62,39 +63,61 @@ fun drawGuessTable(gameState: GameState): File {
     val columnWidths = listOf(120f, 200f, 80f, 70f, 100f)
     val columnSpacing = 4f // 列间距
     val tableWidth = columnWidths.sum() + (columnWidths.size - 1) * columnSpacing + 20f // 正确计算总宽度
-    val cornerRadius = 8f
-    val shadowOffset = 3f
+    val cornerRadius = 16f
 
     val tableX = (width - tableWidth) / 2
     val tableY = (height - tableHeight) / 2
 
-    // 绘制阴影
-    val shadowRect = Rect.makeXYWH(tableX + shadowOffset, tableY + shadowOffset, tableWidth, tableHeight)
-    val shadowRRect = shadowRect.toRRect(cornerRadius)
-    val shadowPaint = Paint().apply {
-        color = Color.makeARGB(50, 0, 0, 0)
-        isAntiAlias = true
+    // 绘制多层阴影效果
+    val shadowColors = listOf(
+        Color.makeARGB(80, 0, 0, 0),
+        Color.makeARGB(40, 0, 0, 0),
+        Color.makeARGB(20, 0, 0, 0)
+    )
+    val shadowOffsets = listOf(8f, 4f, 2f)
+    
+    shadowOffsets.forEachIndexed { index, offset ->
+        val shadowRect = Rect.makeXYWH(tableX + offset, tableY + offset, tableWidth, tableHeight)
+        val shadowRRect = shadowRect.toRRect(cornerRadius)
+        val shadowPaint = Paint().apply {
+            color = shadowColors[index]
+            isAntiAlias = true
+        }
+        canvas.drawRRect(shadowRRect, shadowPaint)
     }
-    canvas.drawRRect(shadowRRect, shadowPaint)
 
-    // 主表格背景
+    // 主表格背景 - 毛玻璃效果
     val tableRect = Rect.makeXYWH(tableX, tableY, tableWidth, tableHeight)
     val tableRRect = tableRect.toRRect(cornerRadius)
+    
+    // 绘制半透明白色背景
     val tablePaint = Paint().apply {
-        color = Color.WHITE
+        color = Color.makeARGB(200, 255, 255, 255) // 半透明白色
         isAntiAlias = true
     }
     canvas.drawRRect(tableRRect, tablePaint)
+    
+    // 添加内边框高光效果
+    val borderPaint = Paint().apply {
+        color = Color.makeARGB(30, 255, 255, 255) // 白色高光边框
+        isAntiAlias = true
+        strokeWidth = 1f
+    }
+    // 绘制边框（使用描边效果）
+    canvas.drawRRect(tableRRect, borderPaint)
 
-    // 表头
+    // 表头 - 现代渐变设计
     val headerRect = Rect.makeXYWH(tableX, tableY, tableWidth, rowHeight)
     val headerRRect = headerRect.toRRect(cornerRadius)
+    
+    // 绘制表头背景渐变
     val headerPaint = Paint().apply {
         shader = Shader.makeLinearGradient(
             tableX, tableY, tableX, tableY + rowHeight,
             intArrayOf(
-                Color.makeRGB(0, 120, 215), // Windows 10 蓝色
-                Color.makeRGB(0, 102, 184)
+                Color.makeRGB(99, 102, 241), // 现代靛蓝色
+                Color.makeRGB(139, 92, 246), // 现代紫色
+                Color.makeRGB(168, 85, 247)  // 现代紫罗兰色
             ),
             null,
             GradientStyle(tileMode = FilterTileMode.CLAMP, isPremul = true, localMatrix = null)
@@ -102,6 +125,21 @@ fun drawGuessTable(gameState: GameState): File {
         isAntiAlias = true
     }
     canvas.drawRRect(headerRRect, headerPaint)
+    
+    // 添加表头高光效果
+    val headerHighlightPaint = Paint().apply {
+        shader = Shader.makeLinearGradient(
+            tableX, tableY, tableX, tableY + rowHeight / 2,
+            intArrayOf(
+                Color.makeARGB(60, 255, 255, 255), // 半透明白色高光
+                Color.makeARGB(0, 255, 255, 255)   // 透明
+            ),
+            null,
+            GradientStyle(tileMode = FilterTileMode.CLAMP, isPremul = true, localMatrix = null)
+        )
+        isAntiAlias = true
+    }
+    canvas.drawRRect(headerRRect, headerHighlightPaint)
 
     // 绘制表头文字
     var x = tableX + 10f
@@ -129,7 +167,7 @@ fun drawGuessTable(gameState: GameState): File {
 
         fields.forEachIndexed { fieldIndex, field ->
             val cellRect = Rect.makeXYWH(x, y, columnWidths[fieldIndex], rowHeight)
-            val cellRRect = cellRect.toRRect(4f)
+            val cellRRect = cellRect.toRRect(8f) // 增加圆角
             
             // 根据匹配情况设置单元格颜色
             val cellPaint = Paint().apply {
@@ -323,16 +361,33 @@ fun drawGuessTable(gameState: GameState): File {
         }
     }
 
-    // 添加标题
-    val titleFont = Font(typeface, 24f)
-    val titlePaint = Paint().apply {
-        color = Color.makeRGB(0, 120, 215) // Windows 10 蓝色
-        isAntiAlias = true
-    }
-    val titleText = "CS2 职业选手猜猜猜"
+    // 添加标题 - 现代设计
+    val titleFont = Font(typeface, 28f) // 增大标题字体
+    val titleText = "CS2 猜职业选手"
     val titleLine = TextLine.make(titleText, titleFont)
     val titleX = (width - titleLine.width) / 2
-    val titleY = 25f
+    val titleY = 30f
+    
+    // 绘制标题阴影
+    val titleShadowPaint = Paint().apply {
+        color = Color.makeARGB(60, 0, 0, 0)
+        isAntiAlias = true
+    }
+    canvas.drawTextLine(titleLine, titleX + 2f, titleY + 2f, titleShadowPaint)
+    
+    // 绘制主标题
+    val titlePaint = Paint().apply {
+        shader = Shader.makeLinearGradient(
+            titleX, titleY, titleX + titleLine.width, titleY,
+            intArrayOf(
+                Color.makeRGB(99, 102, 241), // 现代靛蓝色
+                Color.makeRGB(168, 85, 247)  // 现代紫罗兰色
+            ),
+            null,
+            GradientStyle(tileMode = FilterTileMode.CLAMP, isPremul = true, localMatrix = null)
+        )
+        isAntiAlias = true
+    }
     canvas.drawTextLine(titleLine, titleX, titleY, titlePaint)
 
     val image = surface.makeImageSnapshot()
