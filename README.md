@@ -14,7 +14,7 @@
 ## 安装
 
 1. 确保已安装 Mirai Console
-2. 安装 mirai-skia-plugin 依赖
+2. 安装 mirai-skia-plugin 依赖（https://github.com/cssxsh/mirai-skia-plugin/releases）
 3. 将插件放入 plugins 文件夹
 4. 重启 Mirai Console
 
