@@ -1,10 +1,8 @@
 plugins {
     kotlin("jvm") version "1.8.0"
-    kotlin("plugin.serialization") version "1.8.0"
     id("net.mamoe.mirai-console") version "2.16.0"
-    id("com.github.johnrengelman.shadow") version "8.1.1" // 确保使用最新版本
-    id("me.him188.maven-central-publish") version "1.0.0"
 }
+
 
 group = "org.bcz.guesscs2proplayer"
 version = "0.2.2"
@@ -32,8 +30,4 @@ tasks.withType<Jar> {
 }
 tasks.withType<Jar> {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-}
-
-mirai {
-    jvmTarget = JavaVersion.VERSION_11
 }
