@@ -120,7 +120,6 @@ jobs:
           echo "### �� 发布包信息" >> release_notes.md
           echo "- **插件本体**: 位于 `plugins/` 目录" >> release_notes.md
           echo "- **资源文件**: 位于 `data/org.bcz.guesscs2proplayer/` 目录" >> release_notes.md
-          echo "- **安装方式**: 解压后直接放入Mirai Console的相应目录" >> release_notes.md
           echo "" >> release_notes.md
           echo "## 🎨 Changelog" >> release_notes.md
           echo "" >> release_notes.md
@@ -181,7 +180,7 @@ jobs:
           done <<< "$COMMITS"
 
           [[ -n "$NEW" ]] && echo -e "### ✅ New Features\n$NEW" >> release_notes.md
-          [[ -n "$FIXED" ]] && echo -e "### ��️ Bug Fixes\n$FIXED" >> release_notes.md
+          [[ -n "$FIXED" ]] && echo -e "### ️ Bug Fixes\n$FIXED" >> release_notes.md
           [[ -n "$REFACTOR" ]] && echo -e "### 🧽 Refactoring\n$REFACTOR" >> release_notes.md
           [[ -n "$DOCS" ]] && echo -e "### 📚 Documentation\n$DOCS" >> release_notes.md
           [[ -n "$IMPROVED" ]] && echo -e "### 🚀 Improvements\n$IMPROVED" >> release_notes.md
@@ -190,8 +189,8 @@ jobs:
           echo "" >> release_notes.md
           echo "## 🚀 安装说明" >> release_notes.md
           echo "1. 下载并解压 `GuessCS2ProPlayer-${{ env.VERSION }}.zip`" >> release_notes.md
-          echo "2. 将 `plugins/` 目录下的jar文件放入Mirai Console的plugins目录" >> release_notes.md
-          echo "3. 将 `data/org.bcz.guesscs2proplayer/` 目录放入Mirai Console的data目录" >> release_notes.md
+          echo "2. 将 `plugins/目录下的jar文件放入Mirai Console的plugins目录" >> release_notes.md
+          echo "3. 将 data/org.bcz.guesscs2proplayer/ 目录放入Mirai Console的data目录" >> release_notes.md
           echo "4. 重启Mirai Console即可使用" >> release_notes.md
 
           cat release_notes.md
@@ -201,7 +200,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ env.VERSION }}
-          name: "CS2 猜职业选手小游戏 v${{ env.VERSION }}"
+          name: "v${{ env.VERSION }}"
           body_path: release_notes.md
           files: |
             GuessCS2ProPlayer-${{ env.VERSION }}.zip
