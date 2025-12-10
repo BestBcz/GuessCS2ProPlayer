@@ -1,6 +1,8 @@
 plugins {
     kotlin("jvm") version "1.8.0"
+    kotlin("plugin.serialization") version "1.8.0"
     id("net.mamoe.mirai-console") version "2.16.0"
+    id("me.him188.maven-central-publish") version "1.0.0"
 }
 
 
@@ -19,8 +21,9 @@ dependencies {
     implementation(kotlin("stdlib"))
     compileOnly("net.mamoe:mirai-core:2.16.0")
     compileOnly("net.mamoe:mirai-console:2.16.0")
-    implementation("xyz.cssxsh.mirai:mirai-skia-plugin:1.3.2")
+    compileOnly("xyz.cssxsh.mirai:mirai-skia-plugin:1.3.2")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
+    implementation("org.jetbrains.skiko:skiko-awt:0.7.85")
 }
 
 tasks.withType<Jar> {

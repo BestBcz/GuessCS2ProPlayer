@@ -34,7 +34,7 @@ fun drawGuessTable(gameState: GameState): File {
 
     // 尝试加载自定义字体，如果失败则使用默认字体
     val typeface = try {
-        val fontFile = File(GuessCS2ProPlayer.dataFolder, "TheNeue-Black.ttf")
+        val fontFile = File(GuessCS2ProPlayer.dataFolder, "UNSII-2.ttf")
         if (fontFile.exists()) {
             Typeface.makeFromFile(fontFile.absolutePath)
         } else {
@@ -102,35 +102,13 @@ fun drawGuessTable(gameState: GameState): File {
     val headerRRect = headerRect.toRRect(cornerRadius)
     
     // 绘制表头背景渐变
+    // [修改] 简约表头：深色扁平
     val headerPaint = Paint().apply {
-        shader = Shader.makeLinearGradient(
-            tableX, tableY, tableX, tableY + rowHeight,
-            intArrayOf(
-                Color.makeRGB(99, 102, 241), // 现代靛蓝色
-                Color.makeRGB(139, 92, 246), // 现代紫色
-                Color.makeRGB(168, 85, 247)  // 现代紫罗兰色
-            ),
-            null,
-            GradientStyle(tileMode = FilterTileMode.CLAMP, isPremul = true, localMatrix = null)
-        )
+        color = Color.makeRGB(52, 58, 64) // 深灰色 (Dark Slate)
         isAntiAlias = true
     }
     canvas.drawRRect(headerRRect, headerPaint)
-    
-    // 添加表头高光效果
-    val headerHighlightPaint = Paint().apply {
-        shader = Shader.makeLinearGradient(
-            tableX, tableY, tableX, tableY + rowHeight / 2,
-            intArrayOf(
-                Color.makeARGB(60, 255, 255, 255), // 半透明白色高光
-                Color.makeARGB(0, 255, 255, 255)   // 透明
-            ),
-            null,
-            GradientStyle(tileMode = FilterTileMode.CLAMP, isPremul = true, localMatrix = null)
-        )
-        isAntiAlias = true
-    }
-    canvas.drawRRect(headerRRect, headerHighlightPaint)
+
 
     // 绘制表头文字
     var x = tableX + 10f
@@ -351,35 +329,24 @@ fun drawGuessTable(gameState: GameState): File {
             x += columnWidths[fieldIndex] + columnSpacing
         }
     }
+    val watermarkText = "CS猜选手By Bcz"
+    val watermarkFont = Font(typeface, 12f) // 12f 字体比正文小一点，显得精致
+    val watermarkLine = TextLine.make(watermarkText, watermarkFont)
 
-    // 添加标题 - 现代设计
-    val titleFont = Font(typeface, 22f) // 减小标题字体
-    val titleText = "CS2 猜职业选手"
-    val titleLine = TextLine.make(titleText, titleFont)
-    val titleX = (width - titleLine.width) / 2
-    val titleY = 25f
-    
-    // 绘制标题阴影
-    val titleShadowPaint = Paint().apply {
+    // 颜色设置：黑色，但透明度只有 60 (范围0-255)，实现“若隐若现”的效果
+    val watermarkPaint = Paint().apply {
         color = Color.makeARGB(60, 0, 0, 0)
         isAntiAlias = true
     }
-    canvas.drawTextLine(titleLine, titleX + 2f, titleY + 2f, titleShadowPaint)
-    
-    // 绘制主标题
-    val titlePaint = Paint().apply {
-        shader = Shader.makeLinearGradient(
-            titleX, titleY, titleX + titleLine.width, titleY,
-            intArrayOf(
-                Color.makeRGB(99, 102, 241), // 现代靛蓝色
-                Color.makeRGB(168, 85, 247)  // 现代紫罗兰色
-            ),
-            null,
-            GradientStyle(tileMode = FilterTileMode.CLAMP, isPremul = true, localMatrix = null)
-        )
-        isAntiAlias = true
-    }
-    canvas.drawTextLine(titleLine, titleX, titleY, titlePaint)
+
+    // 计算坐标：放在右下角，距离边缘留出 10px 的空隙
+    val watermarkX = width - watermarkLine.width - 10f
+    // y坐标是基线位置，所以是 高度 - 底部留白
+    val watermarkY = height - 10f
+
+    canvas.drawTextLine(watermarkLine, watermarkX, watermarkY, watermarkPaint)
+
+
 
     val image = surface.makeImageSnapshot()
     val data = image.encodeToData(EncodedImageFormat.PNG)
