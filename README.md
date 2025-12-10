@@ -67,7 +67,8 @@ https://blast.tv/counter-strikle/multiplayer
 
 插件测试阶段 不代表最终品质
 
-<img width="600" height="556" alt="c1fe41d3cf88f025d2ad00abec57cd43" src="https://github.com/user-attachments/assets/3e8efbe6-142e-431d-a36b-a0c0587d4f99" />
+<img width="600" height="556" alt="b5606dd3de3a49fb3a098ce254c6fce6" src="https://github.com/user-attachments/assets/3cc557a3-7718-473c-935f-e6525169b115" />
+
 
 
 
