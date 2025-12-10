@@ -1,81 +1,82 @@
-姓名,队伍,国籍,年龄,游戏内位置
+﻿姓名,队伍,国籍,年龄,游戏内位置
+molodoy,FURIA,Kazakhstan,20,AWPer
+YEKINDAR,FURIA,Latvia,26,Rifler
+tN1R,Team Spirit,Belarus,24,Rifler
+zweih,Team Spirit,Russia,18,Rifler
+jcobbb,FaZe Clan,Poland,21,Rifler
+nexa,BC.Game Esports,Serbia,28,Rifler
+HooXi,Astralis,Denmark,30,Rifler
+makazze,Natus Vincere,Kosovo,19,Rifler
 s1mple,BC.Game Esports,Ukraine,28,AWPer
 ZywOo,Team Vitality,France,25,AWPer
 NiKo,Team Falcons,Bosnia and Herzegovina,28,Rifler
 dev1ce,Astralis,Denmark,30,AWPer
-coldzera,ODDIK,Brazil,31,Rifler
-f0rest,Ninjas in Pyjamas,Sweden,37,Rifler
-GeT_RiGhT,Free Agent,Sweden,35,Rifler
+coldzera,Free Agent,Brazil,31,Rifler
+f0rest,Ninjas in Pyjamas,Sweden,37,Free Agent
+GeT_RiGhT,Free Agent,Sweden,35,Lurker
 kennyS,Free Agent,France,30,AWPer
 olofmeister,FaZe Clan,Sweden,33,Rifler
 GuardiaN,Free Agent,Slovakia,34,Coach
-Snax,G2 Esports,Poland,32,Rifler
+Snax,Free Agent,Poland,32,Rifler
 shox,Free Agent,France,33,Rifler
-KRIMZ,Fnatic,Sweden,31,Rifler
-flusha,Free Agent,Sweden,32,Rifler
+KRIMZ,Fnatic,Sweden,31,Support
+flusha,Free Agent,Sweden,32,Support
 JW,EYEBALLERS,Sweden,30,AWPer
 Xyp9x,MOUZ,Denmark,30,Coach
-dupreeh,Free Agent,Denmark,32,Rifler
+dupreeh,Free Agent,Denmark,32,Free Agent
 gla1ve,ENCE,Denmark,30,Rifler
-Magisk,Team Falcons,Denmark,27,Rifler
-electroNic,Virtus.pro,Russia,27,Rifler
+magisk,Astralis,Denmark,27,Rifler
+electronic,BC.Game Esports,Russia,27,Rifler
 Boombl4,BetBoom Team,Russia,27,Rifler
 Perfecto,Virtus.pro,Russia,26,Rifler
-b1t,Natus Vincere,Ukraine,22,Rifler
+b1t,Natus Vincere,Ukraine,22,Support
 m0NESY,Team Falcons,Russia,20,AWPer
 donk,Team Spirit,Russia,18,Rifler
 Ax1Le,BetBoom Team,Russia,23,Rifler
 sh1ro,Team Spirit,Russia,24,AWPer
-nafany,BetBoom Team,Russia,24,Rifler
+nafany,AMKAL ESPORTS,Russia,24,Rifler
 Stewie2K,Free Agent,United States,27,Rifler
-Twistzz,Team Liquid,Canada,26,Rifler
+twistzz,FaZe Clan,Canada,26,Support
 NAF,Team Liquid,Canada,28,Rifler
 nitr0,NRG,United States,30,Rifler
 tarik,Free Agent,United States,29,Rifler
 autimatic,Free Agent,United States,29,Rifler
 Skadoodle,Free Agent,United States,32,AWPer
-Hiko,Free Agent,United States,35,Rifler
+Hiko,Free Agent,United States,35,Lurker
 daps,NRG,Canada,32,Coach
 stanislaw,Wildcard,Canada,31,Rifler
-Brehze,Free Agent,United States,27,Rifler
-Ethan,Free Agent,United States,25,Rifler
 dycha,Betclic Apogee Esports,Poland,28,Rifler
 hades,Inner Circle Esports,Poland,25,AWPer
-mantuu,Free Agent,Poland,28,AWPer
-ropz,Team Vitality,Estonia,26,Rifler
+ropz,Team Vitality,Estonia,26,Lurker
 broky,FaZe Clan,Latvia,24,AWPer
-karrigan,FaZe Clan,Denmark,35,Rifler
-rain,FaZe Clan,Norway,31,Rifler
+karrigan,FaZe Clan,Denmark Germany,35,Rifler
+rain,100 Thieves,Norway,31,Rifler
 tabseN,BIG,Germany,30,Rifler
-syrsoN,AM Gaming,Germany,29,AWPer
-gade,Free Agent,Denmark,31,Rifler
+syrsoN,Free Agent,Germany,29,AWPer
 stavn,Astralis,Denmark,23,Rifler
-cadiaN,Astralis,Denmark,30,Rifler
+cadiaN,OG,Denmark,30,Rifler
 TeSeS,Team Falcons,Denmark,25,Rifler
-sjuush,Ninjas in Pyjamas,Denmark,26,Rifler
-refrezh,Free Agent,Denmark,27,Rifler
+sjuush,Ninjas in Pyjamas,Denmark,26,Support
+refrezh,Free Agent,Denmark,27,Lurker
 blameF,Fnatic,Denmark,28,Rifler
-k0nfig,Free Agent,Denmark,28,Rifler
 valde,Tricked Esport,Denmark,30,Rifler
-acoR,M1X,Denmark,28,AWPer
+acoR,ECSTATIC,Denmark,28,AWPer
 jabbi,Astralis,Denmark,22,Rifler
 nicoodoz,OG,Denmark,25,AWPer
-Spinx,MOUZ,Israel,25,Rifler
-flamie,Free Agent,Russia,28,Rifler
+Spinx,MOUZ,Israel,25,Lurker
+flamie,Flame Sharks,Russia,28,Rifler
 sdy,ENCE,Ukraine,28,Rifler
 degster,Team Falcons,Russia,24,AWPer
-Patsi,Sangal Esports,Russia,22,Rifler
 r1nkle,Ninjas in Pyjamas,Ukraine,21,AWPer
 headtr1ck,B8,Ukraine,21,AWPer
-mir,Free Agent,Russia,29,Rifler
+Mir,Free Agent,Russia,29,Rifler
 Jame,PARIVISION,Russia,27,AWPer
-FL1T,Virtus.pro,Russia,25,Rifler
-Qikert,PARIVISION,Kazakhstan,26,Rifler
-buster,NOVAQ,Kazakhstan,26,Rifler
-WorldEdit,HAPPY PEOPLE,Russia,34,AWPer
+FL1T,Virtus.pro,Russia,25,Lurker
+Qikert,Free Agent,Kazakhstan,26,Rifler
+Buster,ALLINNERS,Kazakhstan,26,Rifler
 Edward,ESC Gaming,Ukraine,38,Rifler
 TaZ,Free Agent,Poland,39,Coach
-pashaBiceps,Free Agent,Poland,37,Rifler
+pasha,Free Agent,Poland,37,Rifler
 byali,Free Agent,Poland,31,Rifler
 FalleN,FURIA,Brazil,34,AWPer
 fer,Free Agent,Brazil,34,Rifler
@@ -83,7 +84,7 @@ TACO,Free Agent,Brazil,30,Rifler
 fnx,Free Agent,Brazil,35,Rifler
 LUCAS1,Free Agent,Brazil,30,Rifler
 HEN1,RED Canids,Brazil,30,AWPer
-KSCERATO,FURIA,Brazil,26,Rifler
+kscerato,FURIA,Brazil,26,Lurker
 yuurih,FURIA,Brazil,26,Rifler
 arT,Fluxo,Brazil,29,Rifler
 VINI,Imperial Esports,Brazil,26,Rifler
@@ -91,111 +92,100 @@ saffee,MIBR,Brazil,31,AWPer
 drop,RED Canids,Brazil,21,Rifler
 chelo,Imperial Esports,Brazil,27,Rifler
 biguzera,paiN Gaming,Brazil,28,Rifler
-felps,RED Canids,Brazil,29,Rifler
+felps,Gaimin Gladiators,Brazil,29,Rifler
 zews,Free Agent,Brazil,38,Coach
-boltz,Free Agent,Brazil,28,Rifler
-malbsMd,G2 Esports,Guatemala,23,Rifler
+Boltz,Free Agent,Brazil,28,Rifler
+MalbsMd,G2 Esports,Guatemala,23,Rifler
 chrisJ,Free Agent,Netherlands,35,AWPer
-oskar,ALGO Esports,Czechia,34,AWPer
-STYKO,Inner Circle Esports,Slovakia,29,Rifler
-ISSAA,JiJieHao,Jordan,29,Rifler
 woxic,Aurora Gaming,Turkey,27,AWPer
 XANTARES,Aurora Gaming,Turkey,30,Rifler
-Calyx,Eternal Fire,Turkey,27,Rifler
-MAJ3R,Aurora Gaming,Turkey,34,Rifler
-hampus,500,Sweden,27,Rifler
-nawwk,Free Agent,Sweden,28,AWPer
+Calyx,Eternal Fire,Turkey,27,Support
+MAJ3R,Aurora Gaming,Turkey France,34,Rifler
+nawwk,Metizport,Sweden,28,AWPer
 Golden,SAW,Sweden,31,Coach
 REZ,GamerLegion,Sweden,27,Rifler
 Brollan,MOUZ,Sweden,23,Rifler
 es3tag,Free Agent,Denmark,30,Rifler
-ottoNd,Free Agent,Finland,28,AWPer
 allu,Free Agent,Finland,33,AWPer
 sergej,Free Agent,Finland,23,Rifler
 Aleksib,Natus Vincere,Finland,28,Rifler
 suNny,Free Agent,Finland,31,Rifler
 jks,FlyQuest,Australia,30,Rifler
-AZR,Free Agent,Australia,33,Rifler
-Gratisfaction,Free Agent,New Zealand,29,AWPer
-Liazz,Free Agent,Australia,28,Rifler
+AZR,FlyQuest,Australia,33,Coach
+Gratisfaction,Alter Ego,New Zealand,29,AWPer
+Liazz,THUNDERdOWNUNDER,Australia,28,Lurker
 INS,FlyQuest,Australia,27,Rifler
 BnTeT,Alter Ego,Indonesia,30,Rifler
-LETN1,G2 Ares,Serbia,33,Coach
 RUSH,Free Agent,United States,31,Rifler
 Ex6TenZ,Free Agent,Belgium,35,Coach
 SmithZz,Free Agent,France,37,Coach
-RpK,Free Agent,France,36,Rifler
+RpK,Free Agent,France,36,Support
 bodyy,3DMAX,France,28,Rifler
-NBK-,Free Agent,France,31,Rifler
+NBK,GenOne,France,31,Rifler
 apEX,Team Vitality,France,32,Rifler
-Happy,Free Agent,France,34,Rifler
-kioShiMa,Free Agent,France,31,Rifler
-zonic,Team Falcons,Denmark,39,Coach
+Happy,Free Agent,France,34,Lurker
+KioShiMa,Free Agent,France,31,Rifler
+Zonic,Team Falcons,Denmark,39,Coach
 dennis,Free Agent,Sweden,34,Rifler
-twist,Alliance,Sweden,31,Rifler
 Lekr0,Johnny Speeds,Sweden,32,Rifler
-aizy,Preasy Esport,Denmark,29,Coach
 MSL,Free Agent,Denmark,31,Rifler
-cajunb,Free Agent,Denmark,36,Rifler
-TenZ,Free Agent,Canada,24,Rifler
-s0m,Free Agent,United States,23,Rifler
 smooya,Free Agent,United Kingdom,26,AWPer
-Grim,Complexity,United States,25,Rifler
-floppy,Free Agent,United States,26,Rifler
+Grim,Passion UA,United States,25,Rifler
+floppy,Free Agent,United States Germany,26,Rifler
 oSee,NRG,United States,26,AWPer
-junior,BLUEJAYS,United States,25,AWPer
+junior,SkinRave Esports,United States,25,AWPer
 ztr,GamerLegion,Sweden,22,Rifler
 frozen,FaZe Clan,Slovakia,23,Rifler
-huNter-,G2 Esports,Bosnia and Herzegovina,29,Rifler
+huNter,G2 Esports,Bosnia and Herzegovina Serbia,29,Rifler
 NertZ,Team Liquid,Israel,26,Rifler
 SunPayus,G2 Esports,Spain,27,AWPer
-jL,Natus Vincere,Lithuania,26,Rifler
+jL,Natus Vincere,Lithuania,26,Lurker
 Summer,Rare Atom,China,28,Rifler
 Starry,Lynn Vision Gaming,China,20,Rifler
-EliGE,FaZe Clan,United States,28,Rifler
-magixx,Team Spirit,Russia,22,Rifler
+EliGE,Team Liquid,United States,28,Rifler
+magixx,Team Spirit,Russia,22,Support
 chopper,Team Spirit,Russia,28,Rifler
 zont1x,Team Spirit,Ukraine,20,Rifler
 siuhy,Team Liquid,Poland,23,Rifler
 bLitz,The MongolZ,Mongolia,24,Rifler
-Techno4K,The MongolZ,Mongolia,20,Rifler
+Techno,The MongolZ,Mongolia,20,Rifler
 Senzu,The MongolZ,Mongolia,19,Rifler
 mzinho,The MongolZ,Mongolia,18,Rifler
 910,The MongolZ,Mongolia,23,AWPer
 Wicadia,Aurora Gaming,Turkey,20,Rifler
-HeavyGod,G2 Esports,Israel,23,Rifler
+HeavyGod,G2 Esports,Israel Ukraine,23,Rifler
 torzsi,MOUZ,Hungary,23,AWPer
-Jimpphat,MOUZ,Finland,19,Rifler
+Jimpphat,MOUZ,Finland,19,Support
 flameZ,Team Vitality,Israel,22,Rifler
 mezii,Team Vitality,United Kingdom,27,Rifler
 jottAAA,Aurora Gaming,Turkey,23,Rifler
 iM,Natus Vincere,Romania,26,Rifler
 w0nderful,Natus Vincere,Ukraine,21,AWPer
 kyxsan,Team Falcons,North Macedonia,25,Rifler
-Maka,3DMAX,France,28,Rifler
+Maka,3DMAX,France,28,AWPer
 Staehr,Astralis,Denmark,21,Rifler
-FL4MUS,Virtus.pro,Russia,21,Rifler
+FL4MUS,Free Agent,Russia,21,Rifler
 fame,Virtus.pro,Russia,22,Rifler
 ICY,Virtus.pro,Kazakhstan,20,AWPer
 ultimate,Team Liquid,Poland,22,AWPer
-snow,paiN Gaming,Brazil,18,Rifler
+snow,paiN Gaming,Brazil,18,Support
 nqz,paiN Gaming,Brazil,20,AWPer
 Tauson,GamerLegion,Denmark,20,Rifler
-sl3nd,GamerLegion,Hungary,21,AWPer
+sl3nd,GamerLegion,Hungary Romania,21,AWPer
 PR,GamerLegion,Czechia,18,Rifler
 story,SAW,Portugal,23,AWPer
-skullz,FURIA,Brazil,23,Rifler
+skullz,Imperial Esports,Brazil,23,Rifler
 exit,MIBR,Brazil,29,Rifler
 Lucaozy,Fluxo,Brazil,24,Rifler
 brnz4n,MIBR,Brazil,22,Rifler
-insani,MIBR,Brazil,21,Rifler
-phzy,Free Agent,Sweden,23,AWPer
+insani,MIBR,Brazil,21,Support
+phzy,9INE,Sweden,23,AWPer
 JBa,Wildcard,United States,21,Rifler
 LNZ,HEROIC,Sweden,23,Rifler
-JDC,BIG,Germany,25,Rifler
+JDC,BIG,Germany Portugal,25,Support
 fear,Fnatic,Ukraine,25,Rifler
-somebody,TBO Esports,China,30,Rifler
-CYPHER,Fnatic,United Kingdom,23,Rifler
+somebody,Free Agent,China,30,Rifler
+CYPHER,Free Agent,United Kingdom,23,Rifler
 jkaem,BC.Game Esports,Norway,31,Rifler
 kaze,Rare Atom,Malaysia,31,AWPer
 ChildKing,Rare Atom,China,25,Rifler
@@ -205,7 +195,7 @@ JamYoung,TYLOO,China,24,Rifler
 Jee,TYLOO,China,21,AWPer
 Mercury,TYLOO,China,25,Rifler
 Moseyuh,TYLOO,China,21,Rifler
-westmelon,Lynn Vision Gaming,China,24,Rifler
+Westmelon,Lynn Vision Gaming,China,24,Rifler
 z4kr,Lynn Vision Gaming,China,23,Rifler
 EmiliaQAQ,Lynn Vision Gaming,China,21,Rifler
 C4LLM3SU3,Lynn Vision Gaming,China,21,Rifler
