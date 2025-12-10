@@ -1,22 +1,23 @@
-# CS2 猜职业哥小游戏
+# 仿Blast.tv猜CS2职业选手的小游戏插件-GuessCS2ProPlayer
 
 一个基于 Mirai Console 的 CS2 职业选手猜猜猜游戏插件。
 (插件处于开发阶段，当前为测试版发行)
+https://blast.tv/counter-strikle/multiplayer
+### [基于miraiQQ机器人](https://github.com/mamoe/mirai)
 
-## 功能特性
+[![Github](https://img.shields.io/badge/-Github-000?style=flat&logo=Github&logoColor=white)](https://github.com/BestBcz/GuessCS2ProPlayer)
+[![MiraiForum](https://img.shields.io/badge/Forum-Mirai?style=flat-square&label=Mirai
+)](https://mirai.mamoe.net/user/kymandu)
 
-- 🎮 **多种游戏模式**：支持单局、BO3、BO5 模式
-- 🏆 **排行榜系统**：记录每周胜场排行榜
-- 🎨 **现代化界面**：采用 Windows 10 风格设计的图片表格
-- 🌍 **国旗显示**：支持国籍国旗显示
-- 📊 **实时反馈**：颜色编码的猜测结果反馈
-
-## 安装
-
-1. 确保已安装 Mirai Console
-2. 安装 mirai-skia-plugin 依赖（https://github.com/cssxsh/mirai-skia-plugin/releases）
-3. 将插件放入 plugins 文件夹
-4. 重启 Mirai Console
+### 🛠️安装&依赖前置
+1. 从Release中下载最新版本
+2. 将Zip文件解压并放入 _%mirai文件根目录%/_ 中
+3. 重新启动你的mirai-console
+4. 在群内输入 _/猜选手 开始_ 开始游戏
+#### 🛠️依赖前置（请安装到你搭建机器人的服务器上）
+-  [mirai-skia-plugin](https://github.com/cssxsh/mirai-skia-plugin)
+- [Mirai-console 2.16版本或以上](https://github.com/mamoe/mirai/releases)
+- [Chat-Command](https://github.com/project-mirai/chat-command)
 
 ## 使用方法
 
