@@ -9,6 +9,7 @@ plugins {
 group = "org.bcz.guesscs2proplayer"
 version = "0.2.3"
 
+
 repositories {
     maven("https://maven.aliyun.com/repository/public") // 加速依赖下载
     maven("https://maven.mamoe.net/releases") // Mirai 依赖
