@@ -1,3 +1,6 @@
+
+# 此插件不会再更新，可随意借鉴参考修改分发。
+
 # 仿Blast.tv猜CS2职业选手的小游戏插件-GuessCS2ProPlayer
 
 一个基于 Mirai Console 的 CS2 职业选手猜猜猜游戏插件。
